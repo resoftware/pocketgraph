@@ -1,6 +1,10 @@
 name: Deploy to App Store
 
 on:
+  push:
+    branches: ["main"]
+    paths:
+      - "Xamarin.Neo4j/**"
   release:
     types: [published]
   workflow_dispatch:
