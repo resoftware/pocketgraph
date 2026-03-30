@@ -42,6 +42,12 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PROFILE_PATH ~/Library/MobileDevice/Provisioning\ Profiles/
 
+      - name: Set Build Number
+        run: |
+          PLIST="Xamarin.Neo4j/Xamarin.Neo4j/Xamarin.Neo4j.iOS/Info.plist"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${{ github.run_number }}" "$PLIST"
+          echo "Build number: ${{ github.run_number }}"
+
       - name: Build IPA
         working-directory: Xamarin.Neo4j/Xamarin.Neo4j/Xamarin.Neo4j.iOS
         run: |
