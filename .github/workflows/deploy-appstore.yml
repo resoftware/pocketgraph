@@ -13,17 +13,31 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Select Xcode
+      - name: Select Xcode and fix macOS SDK
         run: |
-          XCODE=$(ls -d /Applications/Xcode_16*.app 2>/dev/null | sort -V | tail -1)
-          echo "Using: $XCODE"
-          sudo xcode-select -s "$XCODE/Contents/Developer"
+          XCODE_26=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1)
+          XCODE_16=$(ls -d /Applications/Xcode_16*.app 2>/dev/null | sort -V | tail -1)
+          echo "Xcode 26: $XCODE_26"
+          echo "Xcode 16: $XCODE_16"
+
+          sudo xcode-select -s "$XCODE_26/Contents/Developer"
+
+          # Xcode 26 betas on GitHub runners are missing the macOS platform/SDK.
+          # actool needs it as a host tool. Copy it from the stable Xcode 16 install.
+          DEST="$XCODE_26/Contents/Developer/Platforms/MacOSX.platform"
+          SRC="$XCODE_16/Contents/Developer/Platforms/MacOSX.platform"
+          if [ ! -d "$DEST/Developer/SDKs/MacOSX.sdk" ] && [ -d "$SRC" ]; then
+            echo "Copying MacOSX.platform from Xcode 16..."
+            sudo cp -R "$SRC" "$DEST"
+          fi
+
           xcodebuild -version
+          ls "$DEST/Developer/SDKs/"
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "9.0.x"
+          dotnet-version: "10.0.x"
 
       - name: Install MAUI Workload
         run: dotnet workload install maui-ios
@@ -59,7 +73,7 @@ jobs:
       - name: Build IPA
         working-directory: Xamarin.Neo4j/Xamarin.Neo4j/Xamarin.Neo4j.iOS
         run: |
-          dotnet publish -f net9.0-ios \
+          dotnet publish -f net10.0-ios \
             -c Release \
             -p:ArchiveOnBuild=true \
             -p:RuntimeIdentifier=ios-arm64 \
