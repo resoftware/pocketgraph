@@ -22,7 +22,9 @@ jobs:
           xcodebuild -version
 
       - name: Install iOS platform
-        run: xcodebuild -downloadPlatform iOS
+        run: |
+          sudo xcodebuild -license accept
+          xcodebuild -downloadPlatform iOS
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
