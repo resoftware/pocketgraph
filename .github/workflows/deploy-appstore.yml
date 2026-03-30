@@ -13,26 +13,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Select Xcode and fix macOS SDK
+      - name: Select Xcode
         run: |
-          XCODE_26=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1)
-          XCODE_16=$(ls -d /Applications/Xcode_16*.app 2>/dev/null | sort -V | tail -1)
-          echo "Xcode 26: $XCODE_26"
-          echo "Xcode 16: $XCODE_16"
-
-          sudo xcode-select -s "$XCODE_26/Contents/Developer"
-
-          # Xcode 26 betas on GitHub runners are missing the macOS platform/SDK.
-          # actool needs it as a host tool. Copy it from the stable Xcode 16 install.
-          DEST="$XCODE_26/Contents/Developer/Platforms/MacOSX.platform"
-          SRC="$XCODE_16/Contents/Developer/Platforms/MacOSX.platform"
-          if [ ! -d "$DEST/Developer/SDKs/MacOSX.sdk" ] && [ -d "$SRC" ]; then
-            echo "Copying MacOSX.platform from Xcode 16..."
-            sudo cp -R "$SRC" "$DEST"
-          fi
-
+          # Resolve symlink to avoid actool path issues
+          XCODE_PATH=$(readlink -f /Applications/Xcode_26.1.app || echo "/Applications/Xcode_26.1.app")
+          echo "Using: $XCODE_PATH"
+          sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
           xcodebuild -version
-          ls "$DEST/Developer/SDKs/"
+
+      - name: Install iOS platform
+        run: xcodebuild -downloadPlatform iOS
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
