@@ -15,26 +15,15 @@ jobs:
 
       - name: Select Xcode
         run: |
-          XCODE_26=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1)
-          XCODE_16=$(ls -d /Applications/Xcode_16*.app 2>/dev/null | sort -V | tail -1)
-          echo "Xcode 26: $XCODE_26"
-          echo "Xcode 16: $XCODE_16"
-
-          # Xcode 26 betas on GitHub runners are missing the MacOSX platform.
-          # Symlink the entire platform from Xcode 16 so actool and other host tools work.
-          MACOS_PLATFORM="$XCODE_26/Contents/Developer/Platforms/MacOSX.platform"
-          if [ ! -d "$MACOS_PLATFORM" ]; then
-            echo "Symlinking MacOSX.platform from Xcode 16 into Xcode 26"
-            sudo ln -s "$XCODE_16/Contents/Developer/Platforms/MacOSX.platform" "$MACOS_PLATFORM"
-          fi
-
-          sudo xcode-select -s "$XCODE_26/Contents/Developer"
+          XCODE=$(ls -d /Applications/Xcode_16*.app 2>/dev/null | sort -V | tail -1)
+          echo "Using: $XCODE"
+          sudo xcode-select -s "$XCODE/Contents/Developer"
           xcodebuild -version
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "10.0.x"
+          dotnet-version: "9.0.x"
 
       - name: Install MAUI Workload
         run: dotnet workload install maui-ios
@@ -70,13 +59,12 @@ jobs:
       - name: Build IPA
         working-directory: Xamarin.Neo4j/Xamarin.Neo4j/Xamarin.Neo4j.iOS
         run: |
-          dotnet publish -f net10.0-ios \
+          dotnet publish -f net9.0-ios \
             -c Release \
             -p:ArchiveOnBuild=true \
             -p:RuntimeIdentifier=ios-arm64 \
             -p:CodesignKey="${{ secrets.CODESIGN_KEY_NAME }}" \
-            -p:CodesignProvision="${{ secrets.PROVISIONING_PROFILE_NAME }}" \
-            -p:MtouchUseLlvm=false
+            -p:CodesignProvision="${{ secrets.PROVISIONING_PROFILE_NAME }}"
 
       - name: Upload to App Store Connect
         env:
