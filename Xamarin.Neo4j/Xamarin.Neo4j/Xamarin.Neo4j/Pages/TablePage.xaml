@@ -2,31 +2,11 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:converters="clr-namespace:Xamarin.Neo4j.Converters;assembly=Xamarin.Neo4j"
-             Title="{Binding Title}"
+             Title="JSON View"
              x:Class="Xamarin.Neo4j.Pages.TablePage">
-    <ContentPage.Resources>
-        <ResourceDictionary>
-            <converters:JsonConvertConverter x:Key="jsonConvert" />
-        </ResourceDictionary>
-    </ContentPage.Resources>
-
     <ContentPage.Content>
-        <CarouselView ItemsSource="{Binding Rows}" Position="{Binding Position}" HorizontalScrollBarVisibility="Never" VerticalScrollBarVisibility="Never">
-            <CarouselView.ItemTemplate>
-                <DataTemplate>
-                    <CollectionView ItemsSource="{Binding .}">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <StackLayout Margin="0, 0, 0, 25" Padding="10">
-                                    <Label Text="{Binding Key, StringFormat='{0}:'}" FontAttributes="Bold" />
-                                    <Label Text="{Binding Value, Converter={StaticResource jsonConvert}}" FontSize="Small" />
-                                </StackLayout>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </DataTemplate>
-            </CarouselView.ItemTemplate>
-        </CarouselView>
+        <WebView x:Name="jsonWebView"
+                 HorizontalOptions="FillAndExpand"
+                 VerticalOptions="FillAndExpand" />
     </ContentPage.Content>
 </ContentPage>
