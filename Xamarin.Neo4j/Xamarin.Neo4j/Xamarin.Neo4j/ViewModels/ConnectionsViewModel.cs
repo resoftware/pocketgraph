@@ -50,16 +50,9 @@ namespace Xamarin.Neo4j.ViewModels
                 LoadConnectionStrings();
             }));
 
-            Commands.Add("StartSession", new Command(async () =>
+            Commands.Add("OpenSettings", new Command(async () =>
             {
-                if (ConnectionStringManager.ActiveConnectionString == null)
-                {
-                    await Application.Current.MainPage.DisplayAlert("", "Please select a connection before starting a session.", "OK");
-
-                    return;
-                }
-
-                await Navigation.PushAsync(new SessionPage(ConnectionStringManager.ActiveConnectionString));
+                await Navigation.PushAsync(new SettingsPage());
             }));
         }
 
@@ -74,11 +67,11 @@ namespace Xamarin.Neo4j.ViewModels
             ConnectionStrings = await ConnectionStringManager.GetConnectionStrings();
         }
 
-        public void SetActiveConnectionString(Neo4jConnectionString connectionString)
+        public async void OpenSession(Neo4jConnectionString connectionString)
         {
-            ConnectionStringManager.ActiveConnectionString = ConnectionStringManager.ActiveConnectionString?.Id == connectionString.Id ? null : connectionString;
-
+            ConnectionStringManager.ActiveConnectionString = connectionString;
             LoadConnectionStrings();
+            await Navigation.PushAsync(new SessionPage(connectionString));
         }
 
         #region Bindable Properties

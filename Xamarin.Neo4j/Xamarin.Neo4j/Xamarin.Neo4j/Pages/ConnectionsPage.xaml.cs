@@ -26,14 +26,25 @@ namespace Xamarin.Neo4j.Pages
 
         protected override void OnAppearing()
         {
+            App.ThemeChanged += OnThemeChanged;
             ViewModel.LoadConnectionStrings();
-
             base.OnAppearing();
         }
 
-        private void SetActive(object sender, ItemTappedEventArgs e)
+        protected override void OnDisappearing()
         {
-            ViewModel.SetActiveConnectionString((Neo4jConnectionString)e.Item);
+            App.ThemeChanged -= OnThemeChanged;
+            base.OnDisappearing();
+        }
+
+        private void OnThemeChanged(object sender, EventArgs e)
+        {
+            ViewModel.LoadConnectionStrings();
+        }
+
+        private void OpenSession(object sender, ItemTappedEventArgs e)
+        {
+            ViewModel.OpenSession((Neo4jConnectionString)e.Item);
         }
     }
 }
