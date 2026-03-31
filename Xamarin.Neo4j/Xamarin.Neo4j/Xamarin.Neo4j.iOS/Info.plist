@@ -34,6 +34,8 @@
 	<string>LaunchScreen</string>
 	<key>CFBundleName</key>
 	<string>PocketGraph</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/AppIcon.appiconset</string>
 	<key>UIAppFonts</key>
