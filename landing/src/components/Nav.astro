@@ -1,0 +1,78 @@
+---
+const APP_STORE_URL = "https://apps.apple.com/nl/app/pocketgraph/id1604368926";
+---
+<nav id="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <img src="/logo.png" alt="PocketGraph icon" class="nav-icon" />
+      <span>PocketGraph</span>
+    </a>
+    <a href={APP_STORE_URL} class="nav-dl" target="_blank" rel="noopener">
+      Download
+    </a>
+  </div>
+</nav>
+
+<style>
+  #nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 0 2rem;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    transition: background 0.3s, border-color 0.3s;
+    border-bottom: 1px solid transparent;
+  }
+  #nav.scrolled {
+    background: rgba(12, 12, 12, 0.9);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-color: rgba(226, 226, 226, 0.1);
+  }
+  .nav-inner {
+    max-width: 1120px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+    color: #e8e8e8;
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+    margin-left: 0.75rem;
+  }
+  .nav-icon {
+    width: 56px; height: 56px;
+    display: block;
+  }
+  .nav-dl {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: #e2e2e2;
+    border: 1px solid #e2e2e2;
+    padding: 0.45rem 1.1rem;
+    border-radius: 2px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .nav-dl:hover { background: #e2e2e2; color: #0c0c0c; }
+</style>
+
+<script is:inline>
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav?.classList.toggle('scrolled', window.scrollY > 20);
+  }, { passive: true });
+</script>

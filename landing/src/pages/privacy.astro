@@ -1,0 +1,233 @@
+---
+import Nav from '../components/Nav.astro';
+import Meta from '../components/Meta.astro';
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <Meta
+    title="Privacy Policy — PocketGraph"
+    description="Privacy policy for PocketGraph, the Neo4j & Memgraph client for iPhone and iPad."
+    canonical="/privacy"
+  />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <script src="https://rybbit.resoftware.work/api/script.js" data-site-id="d2f58ef3c722" defer></script>
+</head>
+<body>
+
+<Nav />
+
+<main>
+  <div class="content">
+    <p class="mono label">// legal</p>
+    <h1>Privacy Policy</h1>
+    <p class="meta mono">Re: Software B.V. &middot; Last updated: March 2026</p>
+
+    <section>
+      <h2>Overview</h2>
+      <p>PocketGraph is a graph database client for iPhone and iPad. We take your privacy seriously. This policy explains what data we collect, why, and how it is used.</p>
+      <p>The short version: <strong>PocketGraph does not collect, store, or transmit any of your database credentials or query data.</strong> All connections are made directly from your device to your database.</p>
+    </section>
+
+    <section>
+      <h2>Data We Do Not Collect</h2>
+      <ul>
+        <li>Database hostnames, ports, usernames, or passwords</li>
+        <li>Cypher queries you write or execute</li>
+        <li>Query results or any data stored in your database</li>
+        <li>Graph visualizations or schemas</li>
+      </ul>
+      <p>This data never leaves your device and is never sent to Re: Software or any third party.</p>
+    </section>
+
+    <section>
+      <h2>Data Stored on Your Device</h2>
+      <p>PocketGraph stores the following locally on your device only:</p>
+      <ul>
+        <li>Connection profiles (host, port, username) — stored in the iOS Keychain</li>
+        <li>Query history — stored locally, never synced externally</li>
+        <li>App preferences and settings</li>
+      </ul>
+      <p>This data is protected by iOS system-level encryption and is not accessible to Re: Software.</p>
+    </section>
+
+    <section>
+      <h2>Analytics</h2>
+      <p>This website (pocketgraph.app) uses <a href="https://rybbit.io" target="_blank" rel="noopener">Rybbit</a>, a privacy-friendly analytics tool, to collect anonymised page view data. No cookies are set, no personal data is collected, and no cross-site tracking occurs.</p>
+      <p>The PocketGraph app itself does not include any analytics SDK.</p>
+    </section>
+
+    <section>
+      <h2>Network Connections</h2>
+      <p>PocketGraph connects directly from your device to your Neo4j or Memgraph database using the Bolt protocol over SSL/TLS. No traffic is routed through Re: Software servers. Your database credentials are used solely to authenticate with your own database.</p>
+    </section>
+
+    <section>
+      <h2>Purchases</h2>
+      <p>PocketGraph is sold as a one-time purchase through the Apple App Store. All payment processing is handled by Apple. Re: Software does not receive or store any payment or billing information.</p>
+    </section>
+
+    <section>
+      <h2>Children</h2>
+      <p>PocketGraph is not directed at children under 13 and we do not knowingly collect data from children.</p>
+    </section>
+
+    <section>
+      <h2>Changes to This Policy</h2>
+      <p>If this policy changes materially, we will update the date at the top of this page. Continued use of the app constitutes acceptance of the updated policy.</p>
+    </section>
+
+    <section>
+      <h2>Contact</h2>
+      <p>Questions about this policy? Reach us at <a href="https://resoftware.nl/contact" target="_blank" rel="noopener">resoftware.nl/contact</a>.</p>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="section-inner footer-inner">
+    <a href="/" class="footer-back mono">&larr; Back to PocketGraph</a>
+    <p class="footer-copy mono">&copy; {new Date().getFullYear()} Re: Software B.V.</p>
+  </div>
+</footer>
+
+<style>
+  :root {
+    --bg:       #0c0c0c;
+    --text:     #e8e8e8;
+    --muted:    #9a9a9a;
+    --border:   rgba(226, 226, 226, 0.1);
+    --font-sans: 'Syne', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  /* MAIN */
+  main {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 5rem 2rem 6rem;
+  }
+
+  .label {
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+
+  .meta {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 3.5rem;
+  }
+
+  section {
+    margin-bottom: 2.5rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  section:last-of-type { border-bottom: none; }
+
+  h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #fff;
+    margin-bottom: 0.75rem;
+  }
+
+  p {
+    color: #aaaaaa;
+    font-size: 0.95rem;
+    line-height: 1.75;
+    margin-bottom: 0.75rem;
+  }
+  p:last-child { margin-bottom: 0; }
+
+  strong { color: var(--text); font-weight: 600; }
+
+  ul {
+    list-style: none;
+    margin: 0.5rem 0 0.75rem 0;
+  }
+  ul li {
+    color: #aaaaaa;
+    font-size: 0.95rem;
+    line-height: 1.75;
+    padding-left: 1.25rem;
+    position: relative;
+  }
+  ul li::before {
+    content: '–';
+    position: absolute;
+    left: 0;
+    color: var(--muted);
+  }
+
+  a {
+    color: var(--text);
+    text-underline-offset: 3px;
+  }
+  a:hover { color: #fff; }
+
+  .mono { font-family: var(--font-mono); }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 0;
+  }
+  .section-inner { max-width: 1120px; margin: 0 auto; padding: 0 2rem; }
+  .footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .footer-back {
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    transition: color 0.2s;
+  }
+  .footer-back:hover { color: var(--text); }
+  .footer-copy {
+    font-size: 0.7rem;
+    color: #333333;
+    letter-spacing: 0.02em;
+  }
+</style>
+
+</body>
+</html>
