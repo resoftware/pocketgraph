@@ -8,6 +8,7 @@
 //
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Neo4j.Driver;
@@ -47,15 +48,32 @@ namespace Xamarin.Neo4j.Utilities
             var nodesJson = "[" + string.Join(",", nodeDict.Values.Select(n =>
             {
                 var label = n.Labels.FirstOrDefault() ?? "Node";
-                var title = string.Join(", ", n.Properties.Select(p => $"{p.Key}: {p.Value}"));
+                var title = string.Join(", ", n.Properties.Select(p => $"{p.Key}: {FormatValue(p.Value)}"));
                 var color = LabelColorManager.GetColor(connectionId, label);
                 return $"{{\"id\":{n.Id},\"label\":\"{EscapeJs(label)}\",\"title\":\"{EscapeJs(title)}\",\"color\":\"{color}\"}}";
             })) + "]";
 
             var edgesJson = "[" + string.Join(",", relationships.Select(r =>
-                $"{{\"from\":{r.StartNodeId},\"to\":{r.EndNodeId},\"label\":\"{EscapeJs(r.Type)}\"}}")) + "]";
+            {
+                var props = string.Join(", ", r.Properties.Select(p => $"{p.Key}: {FormatValue(p.Value)}"));
+                return $"{{\"from\":{r.StartNodeId},\"to\":{r.EndNodeId},\"label\":\"{EscapeJs(r.Type)}\",\"title\":\"{EscapeJs(props)}\"}}";
+            })) + "]";
 
             return (nodesJson, edgesJson);
+        }
+
+        private static string FormatValue(object value)
+        {
+            if (value == null) return "null";
+
+            if (value is IList list)
+                return "[" + string.Join(", ", list.Cast<object>().Select(FormatValue)) + "]";
+
+            if (value is IDictionary dict)
+                return "{" + string.Join(", ", dict.Keys.Cast<object>()
+                    .Select(k => $"{k}: {FormatValue(dict[k])}")) + "}";
+
+            return value.ToString();
         }
 
         public static string EscapeJs(string s)

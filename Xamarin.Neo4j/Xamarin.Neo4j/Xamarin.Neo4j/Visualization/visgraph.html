@@ -59,7 +59,7 @@
                 return { id: d.id, label: d.label || String(d.id), title: d.title || '', color: d.color || '#5A99D4', x: 0, y: 0, vx: 0, vy: 0 };
             });
             var edges = edgesData.map(function (d) {
-                return { from: d.from, to: d.to, label: d.label || '' };
+                return { from: d.from, to: d.to, label: d.label || '', title: d.title || '' };
             });
             var nodeById = {};
             nodes.forEach(function (n) { nodeById[n.id] = n; });
@@ -153,6 +153,7 @@
 
                 // gravity toward center + damping + velocity cap
                 nodes.forEach(function (n) {
+                    if (n.pinned) { n.vx = 0; n.vy = 0; return; }
                     n.vx += (W / 2 - n.x) * GRAVITY;
                     n.vy += (H / 2 - n.y) * GRAVITY;
                     n.vx *= DAMP; n.vy *= DAMP;
@@ -200,7 +201,8 @@
             var NODE_SEL = '#E8A838';
             var EDGE_CLR = '#666';
             var TEXT_CLR = '{{textColor}}';
-            var selected = null;
+            var selected = null;      // selected node
+            var selectedEdge = null;   // selected edge
 
             function draw() {
                 ctx.save();
@@ -212,6 +214,7 @@
                 edges.forEach(function (e) {
                     var a = nodeById[e.from], b = nodeById[e.to];
                     if (!a || !b) return;
+                    var isSelEdge = e === selectedEdge;
                     var ang = Math.atan2(b.y - a.y, b.x - a.x);
                     var tx  = b.x - NODE_R * Math.cos(ang);
                     var ty  = b.y - NODE_R * Math.sin(ang);
@@ -219,8 +222,8 @@
                     ctx.beginPath();
                     ctx.moveTo(a.x, a.y);
                     ctx.lineTo(tx, ty);
-                    ctx.strokeStyle = EDGE_CLR;
-                    ctx.lineWidth = 1.5;
+                    ctx.strokeStyle = isSelEdge ? NODE_SEL : EDGE_CLR;
+                    ctx.lineWidth = isSelEdge ? 3 : 1.5;
                     ctx.stroke();
 
                     // arrowhead
@@ -229,12 +232,12 @@
                     ctx.lineTo(tx - 9 * Math.cos(ang - 0.4), ty - 9 * Math.sin(ang - 0.4));
                     ctx.lineTo(tx - 9 * Math.cos(ang + 0.4), ty - 9 * Math.sin(ang + 0.4));
                     ctx.closePath();
-                    ctx.fillStyle = EDGE_CLR;
+                    ctx.fillStyle = isSelEdge ? NODE_SEL : EDGE_CLR;
                     ctx.fill();
 
                     if (e.label) {
-                        ctx.fillStyle = TEXT_CLR;
-                        ctx.font = '10px -apple-system, sans-serif';
+                        ctx.fillStyle = isSelEdge ? NODE_SEL : TEXT_CLR;
+                        ctx.font = (isSelEdge ? 'bold ' : '') + '10px -apple-system, sans-serif';
                         ctx.textAlign = 'center';
                         ctx.textBaseline = 'middle';
                         ctx.fillText(e.label, (a.x + b.x) / 2, (a.y + b.y) / 2 - 5);
@@ -265,11 +268,10 @@
             }
 
             // ---- popup ----
-            function showPopup(n) {
-                selected = n;
-                var html = '<div class="lbl">' + escHtml(n.label) + '</div>';
-                if (n.title) {
-                    n.title.split(', ').forEach(function (pair) {
+            function buildPropsHtml(title) {
+                var html = '';
+                if (title) {
+                    title.split(', ').forEach(function (pair) {
                         var idx = pair.indexOf(': ');
                         if (idx > -1) {
                             html += '<div class="prop"><b>' + escHtml(pair.slice(0, idx)) + ':</b> ' + escHtml(pair.slice(idx + 2)) + '</div>';
@@ -280,6 +282,24 @@
                 } else {
                     html += '<div class="prop">No properties</div>';
                 }
+                return html;
+            }
+
+            function showPopup(n) {
+                selected = n;
+                selectedEdge = null;
+                var html = '<div class="lbl">' + escHtml(n.label) + '</div>';
+                html += buildPropsHtml(n.title);
+                popup.innerHTML = html;
+                popup.style.display = 'block';
+                draw();
+            }
+
+            function showEdgePopup(e) {
+                selectedEdge = e;
+                selected = null;
+                var html = '<div class="lbl" style="color:#E8A838">' + escHtml(e.label || 'Relationship') + '</div>';
+                html += buildPropsHtml(e.title);
                 popup.innerHTML = html;
                 popup.style.display = 'block';
                 draw();
@@ -287,6 +307,7 @@
 
             function hidePopup() {
                 selected = null;
+                selectedEdge = null;
                 popup.style.display = 'none';
                 draw();
             }
@@ -420,6 +441,25 @@
             // ---- interaction handling (touch + mouse/pointer) ----
             var ptrStartX, ptrStartY, ptrEndX, ptrEndY, ptrStartTime, dragging = null, panning = false, mouseDown = false;
 
+            function edgeAt(sx, sy) {
+                var w = toWorld(sx, sy);
+                var threshold = 12 / zoom; // tap tolerance in world units
+                var best = null, bestDist = threshold;
+                edges.forEach(function (e) {
+                    var a = nodeById[e.from], b = nodeById[e.to];
+                    if (!a || !b) return;
+                    // point-to-segment distance
+                    var dx = b.x - a.x, dy = b.y - a.y;
+                    var lenSq = dx * dx + dy * dy;
+                    if (lenSq === 0) return;
+                    var t = Math.max(0, Math.min(1, ((w.x - a.x) * dx + (w.y - a.y) * dy) / lenSq));
+                    var px = a.x + t * dx, py = a.y + t * dy;
+                    var dist = Math.hypot(w.x - px, w.y - py);
+                    if (dist < bestDist) { bestDist = dist; best = e; }
+                });
+                return best;
+            }
+
             function nodeAt(sx, sy) {
                 var w = toWorld(sx, sy);
                 for (var i = nodes.length - 1; i >= 0; i--) {
@@ -483,8 +523,20 @@
                         else showPopup(hit);
                     } else {
                         lastTapNode = null; lastTapTime = 0;
-                        hidePopup();
+                        // no node hit — check if an edge was tapped
+                        var hitEdge = edgeAt(ptrStartX, ptrStartY);
+                        if (hitEdge) {
+                            if (hitEdge === selectedEdge) hidePopup();
+                            else showEdgePopup(hitEdge);
+                        } else {
+                            hidePopup();
+                        }
                     }
+                }
+
+                // pin node in place after dragging it
+                if (dragging && moved) {
+                    dragging.pinned = true;
                 }
 
                 dragging = null;
