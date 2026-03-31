@@ -440,6 +440,16 @@
 
             // ---- interaction handling (touch + mouse/pointer) ----
             var ptrStartX, ptrStartY, ptrEndX, ptrEndY, ptrStartTime, dragging = null, panning = false, mouseDown = false;
+            var interacted = false;
+            function notifyInteraction() {
+                if (interacted) return;
+                interacted = true;
+                var f = document.createElement('iframe');
+                f.style.display = 'none';
+                f.src = 'app://interaction';
+                document.body.appendChild(f);
+                setTimeout(function () { document.body.removeChild(f); }, 200);
+            }
 
             function edgeAt(sx, sy) {
                 var w = toWorld(sx, sy);
@@ -477,6 +487,7 @@
 
             function handleStart(e) {
                 if (e.touches) e.preventDefault();
+                notifyInteraction();
                 var p = coordFromEvent(e);
                 ptrStartX = ptrEndX = p.x;
                 ptrStartY = ptrEndY = p.y;

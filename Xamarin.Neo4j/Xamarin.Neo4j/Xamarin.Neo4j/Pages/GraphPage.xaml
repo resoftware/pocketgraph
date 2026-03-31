@@ -5,6 +5,25 @@
              Title="Graph"
              x:Class="Xamarin.Neo4j.Pages.GraphPage">
     <ContentPage.Content>
-        <WebView x:Name="webView" Source="{Binding Source}" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" />
+        <Grid>
+            <WebView x:Name="webView" Source="{Binding Source}"
+                     HorizontalOptions="FillAndExpand"
+                     VerticalOptions="FillAndExpand" />
+
+            <!-- Double-tap hint — hidden after first interaction -->
+            <Border x:Name="hintBorder"
+                    VerticalOptions="End"
+                    HorizontalOptions="Center"
+                    Margin="16,0,16,16"
+                    BackgroundColor="#CC000000"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 12"
+                    Padding="12,8">
+                <Label Text="Double-tap a node to expand its relationships"
+                       TextColor="White"
+                       FontSize="13"
+                       HorizontalTextAlignment="Center" />
+            </Border>
+        </Grid>
     </ContentPage.Content>
 </ContentPage>

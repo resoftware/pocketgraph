@@ -2,28 +2,28 @@
 
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:fonts="clr-namespace:Xamarin.Neo4j.Fonts;assembly=Xamarin.Neo4j"
-             Margin="0, 0, 0, 25"
-             x:Class="Xamarin.Neo4j.Controls.QueryResultView">
-    <StackLayout Orientation="Vertical" Spacing="0">
-        <Border Stroke="{StaticResource QueryTextBorder}" StrokeThickness="4">
-            <Label Text="{Binding Query}" Padding="8" HorizontalOptions="FillAndExpand" BackgroundColor="{StaticResource Extreme}" />
+             x:Class="Xamarin.Neo4j.Controls.QueryResultView"
+             x:Name="self">
+    <Grid VerticalOptions="Start">
+
+        <!-- Graph WebView -->
+        <WebView x:Name="graphView"
+                 HorizontalOptions="FillAndExpand"
+                 IsVisible="{Binding CanDisplayGraph}"
+                 HeightRequest="{Binding GraphViewHeight, Source={x:Reference self}}" />
+
+        <!-- Error display -->
+        <Border IsVisible="{Binding IsError}"
+                BackgroundColor="{DynamicResource ErrorBackground}"
+                StrokeThickness="0"
+                Padding="12">
+            <StackLayout Spacing="6">
+                <Label Text="{Binding ErrorMessage}"
+                       TextColor="{DynamicResource ErrorTextColor}"
+                       FontSize="14"
+                       FontFamily="RobotoMono" />
+            </StackLayout>
         </Border>
 
-        <WebView x:Name="graphView" HorizontalOptions="FillAndExpand" IsVisible="{Binding CanDisplayGraph}" HeightRequest="200" />
-
-        <Grid BackgroundColor="{StaticResource QueryActionBar}" Padding="5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
-            </Grid.ColumnDefinitions>
-
-            <Button Grid.Column="0" Clicked="SaveQuery" Text="{x:Static fonts:FontAwesomeSolid.Star}" BackgroundColor="Transparent" TextColor="White" FontFamily="{StaticResource FontAwesomeSolid}" FontSize="20" />
-            <Button Grid.Column="1" Clicked="OpenNeovis" Text="{x:Static fonts:FontAwesomeSolid.Expand}" BackgroundColor="Transparent" IsEnabled="{Binding CanDisplayGraph}" TextColor="White" FontFamily="{StaticResource FontAwesomeSolid}" FontSize="20 "/>
-            <Button Grid.Column="2" Clicked="OpenTableView" Text="{x:Static fonts:FontAwesomeSolid.List}" BackgroundColor="Transparent" TextColor="White" FontFamily="{StaticResource FontAwesomeSolid}" FontSize="20 "/>
-            <Button Grid.Column="3" Clicked="CloseResultView" Text="{x:Static fonts:FontAwesomeSolid.Times}" BackgroundColor="Transparent" TextColor="White" FontFamily="{StaticResource FontAwesomeSolid}" FontSize="20 "/>
-        </Grid>
-    </StackLayout>
+    </Grid>
 </ContentView>

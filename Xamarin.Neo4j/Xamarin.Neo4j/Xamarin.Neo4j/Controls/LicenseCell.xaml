@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ViewCell xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="Xamarin.Neo4j.Controls.LicenseCell">
     <StackLayout Padding="15, 15, 15, 0">
-        <Label FontAttributes="Bold" TextColor="#4169FF" Text="{Binding Name}">
+        <Label FontAttributes="Bold" TextColor="{DynamicResource Accent}" Text="{Binding Name}">
             <Label.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding OpenRepo}" />
             </Label.GestureRecognizers>
         </Label>
-        <ContentView Padding="10" BackgroundColor="#D8D8D8">
-            <Label Text="{Binding LicenseText}" />
+        <ContentView Padding="10" BackgroundColor="{DynamicResource QueryTextBorder}">
+            <Label Text="{Binding LicenseText}" TextColor="{DynamicResource SecondaryTextColor}" />
         </ContentView>
     </StackLayout>
 </ViewCell>

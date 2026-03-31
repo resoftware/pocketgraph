@@ -1,0 +1,5 @@
+
+# Android signing — never commit
+*.jks
+*.keystore
+*.env

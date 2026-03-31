@@ -33,6 +33,13 @@ namespace Xamarin.Neo4j.Pages
         {
             Console.WriteLine($"[Graph] Navigating: {e.Url}");
 
+            if (e.Url.Contains("interaction"))
+            {
+                e.Cancel = true;
+                hintBorder.IsVisible = false;
+                return;
+            }
+
             if (!e.Url.Contains("expand") || !e.Url.Contains("nodeId")) return;
 
             e.Cancel = true;

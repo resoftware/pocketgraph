@@ -31,16 +31,16 @@
                 <Label Text="{x:Static fonts:FontAwesomeSolid.Code}"
                        FontFamily="{StaticResource FontAwesomeSolid}"
                        FontSize="48"
-                       TextColor="{StaticResource SecondaryTextColor}"
+                       TextColor="{DynamicResource SecondaryTextColor}"
                        HorizontalOptions="Center" />
                 <Label Text="No saved queries"
                        FontSize="18"
                        FontAttributes="Bold"
-                       TextColor="{StaticResource SecondaryTextColor}"
+                       TextColor="{DynamicResource SecondaryTextColor}"
                        HorizontalOptions="Center" />
                 <Label Text="Save a query from a session to see it here"
                        FontSize="14"
-                       TextColor="{StaticResource SecondaryTextColor}"
+                       TextColor="{DynamicResource SecondaryTextColor}"
                        HorizontalOptions="Center" />
             </StackLayout>
         </Grid>

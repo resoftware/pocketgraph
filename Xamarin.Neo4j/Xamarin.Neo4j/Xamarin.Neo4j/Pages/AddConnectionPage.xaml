@@ -2,6 +2,7 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:fonts="clr-namespace:Xamarin.Neo4j.Fonts;assembly=Xamarin.Neo4j"
              Title="Add Connection"
              x:Class="Xamarin.Neo4j.Pages.AddConnectionPage">
     <ContentPage.Content>
@@ -34,13 +35,25 @@
                </StackLayout>
 
                <StackLayout Spacing="4">
-                   <Label Text="Password:" FontAttributes="Bold" FontSize="Small"  />
-                   <Entry Text="{Binding Password}" IsPassword="True" />
+                   <Label Text="Password:" FontAttributes="Bold" FontSize="Small" />
+                   <Grid ColumnDefinitions="*,Auto">
+                       <Entry Grid.Column="0" x:Name="passwordEntry"
+                              Text="{Binding Password}"
+                              IsPassword="True" />
+                       <Button Grid.Column="1" x:Name="eyeButton"
+                               Text="{x:Static fonts:FontAwesomeSolid.Eye}"
+                               FontFamily="{StaticResource FontAwesomeSolid}"
+                               FontSize="16"
+                               WidthRequest="44"
+                               BackgroundColor="Transparent"
+                               TextColor="{DynamicResource SecondaryTextColor}"
+                               Clicked="TogglePasswordVisibility" />
+                   </Grid>
                </StackLayout>
 
-               <Button Text="Connect" BackgroundColor="#2DB4A8" TextColor="White" Command="{Binding Commands[Connect]}" />
-               <Button Text="Test" BackgroundColor="Orange" TextColor="White" Command="{Binding Commands[Test]}" />
-               <Button Text="Save" BackgroundColor="#89972E" TextColor="White" Command="{Binding Commands[Save]}" />
+               <Button Text="Test" BackgroundColor="Transparent" TextColor="{DynamicResource SecondaryTextColor}" BorderColor="{DynamicResource SecondaryTextColor}" BorderWidth="1" Command="{Binding Commands[Test]}" />
+               <Button Text="Connect" BackgroundColor="Transparent" TextColor="{DynamicResource PrimaryTextColor}" BorderColor="{DynamicResource PrimaryTextColor}" BorderWidth="1" Command="{Binding Commands[Connect]}" />
+               <Button Text="Save" BackgroundColor="{DynamicResource Accent}" TextColor="{DynamicResource QueryTextBackground}" Command="{Binding Commands[Save]}" />
            </StackLayout>
        </ScrollView>
     </ContentPage.Content>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<style>
+:root{--bg:{{backgroundColor}};--fg:{{textColor}};--toolbar:{{toolbarBg}};--input:{{inputBg}};--border:{{borderColor}};--muted:{{mutedColor}}}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Courier New',monospace;font-size:13px;background:var(--bg);color:var(--fg);overscroll-behavior:none}
+#toolbar{position:sticky;top:0;z-index:10;background:var(--toolbar);padding:8px;display:flex;flex-direction:column;gap:6px;border-bottom:1px solid var(--border)}
+#toolbar input{width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:6px;background:var(--input);color:var(--fg);font-family:inherit;font-size:13px;outline:none;-webkit-appearance:none}
+#toolbar-row2{display:flex;gap:6px;align-items:center}
+#toolbar-row2 input{flex:1}
+.tbtn{padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:var(--input);color:var(--muted);font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.tbtn:active{opacity:.7}
+#status{font-size:11px;color:var(--muted);padding:0 2px;min-height:15px}
+#output{padding:10px}
+.s{color:#4CAF50}.n{color:#64B5F6}.b{color:#FFB74D}.nl{color:#90A4AE}.k{color:#EF9A9A}.e{color:#EF5350}
+.br{color:var(--fg);opacity:.7}.cm{color:var(--fg);opacity:.4}
+/* Block-based tree nodes */
+.node,.knode{display:block}
+.nhd{display:block;cursor:default}
+.tog{cursor:pointer;user-select:none;color:var(--muted);display:inline-block;width:16px;font-size:11px}
+.tog:hover{color:var(--fg)}
+.ch{padding-left:18px;border-left:1px dotted var(--border);margin-left:7px}
+.node.cls>.ch,.knode.cls>.ch{display:none}
+.sum{display:none;color:var(--muted)}
+.node.cls .sum,.knode.cls .sum{display:inline}
+.row{white-space:pre-wrap;word-break:break-word}
+.hl{background:#FFF176;color:#000;border-radius:2px}
+</style>
+</head>
+<body>
+<div id="toolbar">
+  <input id="srch" type="search" placeholder="Search…" />
+  <div id="toolbar-row2">
+    <input id="filt" type="search" placeholder="jq: .key  .[0]  select(.id==1)  map(.name)  keys" />
+    <button class="tbtn" onclick="collapseAll(true)">⊟ All</button>
+    <button class="tbtn" onclick="collapseAll(false)">⊞ All</button>
+  </div>
+  <div id="status"></div>
+</div>
+<div id="output"></div>
+<script>
+const RAW={{json}};
+let cur=RAW,srch='';
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function hl(s){if(!srch)return esc(s);const re=new RegExp('('+srch.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');return esc(s).replace(re,'<span class="hl">$1</span>')}
+
+let uid=0;
+
+// Render a primitive value inline
+function rvPrim(v){
+  if(v===null)return'<span class="nl">null</span>';
+  if(typeof v==='string')return'<span class="s">"'+hl(v)+'"</span>';
+  if(typeof v==='number')return'<span class="n">'+hl(v)+'</span>';
+  if(typeof v==='boolean')return'<span class="b">'+v+'</span>';
+  return esc(String(v));
+}
+
+// Render any value. For objects/arrays returns a block div; for primitives returns inline span.
+function rv(v,cm){
+  const c=cm?'<span class="cm">,</span>':'';
+  if(v===null||typeof v!=='object')return rvPrim(v)+c;
+  if(Array.isArray(v))return ra(v,cm);
+  return ro(v,cm);
+}
+
+function ra(a,cm){
+  const c=cm?'<span class="cm">,</span>':'';
+  if(!a.length)return'<span class="br">[]</span>'+c;
+  const id='n'+(uid++);
+  const items=a.map((v,i)=>rvItem(v,i<a.length-1)).join('');
+  return'<div class="node" id="'+id+'">'+
+    '<div class="nhd"><span class="tog" onclick="tog(\''+id+'\')">▾</span><span class="br">[</span><span class="sum"> '+a.length+' ]'+c+'</span></div>'+
+    '<div class="ch">'+items+'<div class="row"><span class="br">]</span>'+c+'</div></div>'+
+    '</div>';
+}
+
+function ro(o,cm){
+  const c=cm?'<span class="cm">,</span>':'';
+  const ks=Object.keys(o);
+  if(!ks.length)return'<span class="br">{}</span>'+c;
+  const id='n'+(uid++);
+  const inner=ks.map((k,i)=>rkv(k,o[k],i<ks.length-1)).join('');
+  return'<div class="node" id="'+id+'">'+
+    '<div class="nhd"><span class="tog" onclick="tog(\''+id+'\')">▾</span><span class="br">{</span><span class="sum"> '+ks.length+' }'+c+'</span></div>'+
+    '<div class="ch">'+inner+'<div class="row"><span class="br">}</span>'+c+'</div></div>'+
+    '</div>';
+}
+
+// Render a key-value pair inside an object. Integrates key+toggle+bracket on one line for object/array values.
+function rkv(k,v,hasComma){
+  const c=hasComma?'<span class="cm">,</span>':'';
+  if(v!==null&&typeof v==='object'){
+    const isArr=Array.isArray(v);
+    const ob=isArr?'[':'{', cb=isArr?']':'}';
+    const n=isArr?v.length:Object.keys(v).length;
+    if(!n)return'<div class="row"><span class="k">"'+hl(k)+'"</span><span class="br">: '+ob+cb+'</span>'+c+'</div>';
+    const id='n'+(uid++);
+    const children=isArr
+      ?v.map((val,i)=>rvItem(val,i<v.length-1)).join('')
+      :Object.keys(v).map((sk,i)=>rkv(sk,v[sk],i<Object.keys(v).length-1)).join('');
+    return'<div class="knode" id="'+id+'">'+
+      '<div class="row nhd"><span class="k">"'+hl(k)+'"</span><span class="br">: </span><span class="tog" onclick="tog(\''+id+'\')">▾</span><span class="br">'+ob+'</span><span class="sum"> '+n+cb+c+'</span></div>'+
+      '<div class="ch">'+children+'<div class="row"><span class="br">'+cb+'</span>'+c+'</div></div>'+
+      '</div>';
+  }
+  return'<div class="row"><span class="k">"'+hl(k)+'"</span><span class="br">: </span>'+rvPrim(v)+c+'</div>';
+}
+
+// Render an array item (object/array or primitive)
+function rvItem(v,hasComma){
+  const c=hasComma?'<span class="cm">,</span>':'';
+  if(v!==null&&typeof v==='object'){
+    const isArr=Array.isArray(v);
+    const ob=isArr?'[':'{', cb=isArr?']':'}';
+    const n=isArr?v.length:Object.keys(v).length;
+    if(!n)return'<div class="row"><span class="br">'+ob+cb+'</span>'+c+'</div>';
+    const id='n'+(uid++);
+    const children=isArr
+      ?v.map((val,i)=>rvItem(val,i<v.length-1)).join('')
+      :Object.keys(v).map((k,i)=>rkv(k,v[k],i<Object.keys(v).length-1)).join('');
+    return'<div class="knode" id="'+id+'">'+
+      '<div class="row nhd"><span class="tog" onclick="tog(\''+id+'\')">▾</span><span class="br">'+ob+'</span><span class="sum"> '+n+cb+c+'</span></div>'+
+      '<div class="ch">'+children+'<div class="row"><span class="br">'+cb+'</span>'+c+'</div></div>'+
+      '</div>';
+  }
+  return'<div class="row">'+rvPrim(v)+c+'</div>';
+}
+
+function tog(id){const el=document.getElementById(id);el.classList.toggle('cls');el.querySelector('.tog').textContent=el.classList.contains('cls')?'▸':'▾'}
+
+function collapseAll(collapse){
+  document.querySelectorAll('.node,.knode').forEach(function(el){
+    if(collapse){el.classList.add('cls');var t=el.querySelector('.tog');if(t)t.textContent='▸';}
+    else{el.classList.remove('cls');var t=el.querySelector('.tog');if(t)t.textContent='▾';}
+  });
+}
+
+function status(msg,err){const el=document.getElementById('status');el.textContent=msg;el.style.color=err?'#EF5350':'var(--muted)'}
+
+function render(){
+  uid=0;
+  document.getElementById('output').innerHTML='<div class="row">'+rv(cur,false)+'</div>';
+  status(count(cur)+' values'+(srch?' · "'+srch+'"':''));
+}
+
+function count(v){
+  if(v===null||typeof v!=='object')return 1;
+  if(Array.isArray(v))return v.reduce((s,i)=>s+count(i),0);
+  return Object.values(v).reduce((s,i)=>s+count(i),0);
+}
+
+function setTheme(isDark){
+  const r=document.documentElement.style;
+  r.setProperty('--bg',isDark?'#1e1e1e':'#ffffff');
+  r.setProperty('--fg',isDark?'#d4d4d4':'#1a1a1a');
+  r.setProperty('--toolbar',isDark?'#252526':'#f5f5f5');
+  r.setProperty('--input',isDark?'#3c3c3c':'#ffffff');
+  r.setProperty('--border',isDark?'#454545':'#cccccc');
+  r.setProperty('--muted',isDark?'#808080':'#8a8a8a');
+  document.body.style.background=isDark?'#1e1e1e':'#ffffff';
+}
+
+document.getElementById('srch').addEventListener('input',function(){srch=this.value.trim().toLowerCase();render()});
+
+document.getElementById('filt').addEventListener('input',function(){
+  const ex=this.value.trim();
+  if(!ex){cur=RAW;render();return}
+  try{let r=jq(RAW,ex);cur=r===undefined?null:r;render()}
+  catch(e){status('Error: '+e.message,true)}
+});
+
+// ---- jq engine ----
+function jq(d,ex){
+  ex=ex.trim();
+  if(!ex||ex==='.')return d;
+  if(ex.includes('|')){const ps=pipes(ex);return ps.reduce((x,p)=>{if(Array.isArray(x))return x.flatMap(i=>{const r=jq(i,p);return Array.isArray(r)?r:[r]});return jq(x,p)},d)}
+  if(ex==='.')return d;
+  if(ex==='.[]'){if(Array.isArray(d))return d;if(d&&typeof d==='object')return Object.values(d);throw new Error('.[] on non-iterable')}
+  if(ex==='keys'){ma(d);return Object.keys(d)}
+  if(ex==='values'){ma(d);return Object.values(d)}
+  if(ex==='length')return Array.isArray(d)?d.length:d&&typeof d==='object'?Object.keys(d).length:typeof d==='string'?d.length:null;
+  if(ex==='type')return Array.isArray(d)?'array':typeof d;
+  if(ex==='reverse'){mo(d);return[...d].reverse()}
+  if(ex==='sort'){mo(d);return[...d].sort((a,b)=>a<b?-1:a>b?1:0)}
+  if(ex==='unique'){mo(d);return[...new Set(d.map(v=>JSON.stringify(v)))].map(s=>JSON.parse(s))}
+  if(ex==='first'){mo(d);return d[0]}
+  if(ex==='last'){mo(d);return d[d.length-1]}
+  if(ex==='flatten'){mo(d);return d.flat(Infinity)}
+  if(ex==='add'){mo(d);if(!d.length)return null;if(typeof d[0]==='number')return d.reduce((s,v)=>s+v,0);if(typeof d[0]==='string')return d.join('');return null}
+  if(ex==='any'){mo(d);return d.some(Boolean)}
+  if(ex==='all'){mo(d);return d.every(Boolean)}
+  if(ex==='to_entries'){ma(d);return Object.entries(d).map(([k,v])=>({key:k,value:v}))}
+  if(ex==='from_entries'){mo(d);const o={};for(const e of d)o[e.key||e.name]=e.value;return o}
+  if(ex==='not')return!d;
+  let m;
+  if(m=ex.match(/^\.(\w+)$/))return d?.[m[1]]??null;
+  if(m=ex.match(/^\.\[(-?\d+)\]$/)){const i=+m[1];return Array.isArray(d)?(i<0?d[d.length+i]:d[i]):null}
+  if(m=ex.match(/^\.\[(-?\d*):(-?\d*)\]$/)){mo(d);return d.slice(m[1]?+m[1]:0,m[2]?+m[2]:d.length)}
+  if(m=ex.match(/^\.(\w+)\[\]$/)){const v=d?.[m[1]];return Array.isArray(v)?v:[v]}
+  if(m=ex.match(/^\.(\w+)\?$/)){try{return d?.[m[1]]??null}catch{return null}}
+  if(m=ex.match(/^select\((.+)\)$/)){const ok=cond(d,m[1]);return ok?d:undefined}
+  if(m=ex.match(/^map\((.+)\)$/)){mo(d);return d.map(i=>jq(i,m[1])).filter(v=>v!==undefined)}
+  if(m=ex.match(/^map_values\((.+)\)$/)){if(Array.isArray(d))return d.map(i=>jq(i,m[1]));if(d&&typeof d==='object'){const o={};for(const k of Object.keys(d))o[k]=jq(d[k],m[1]);return o}}
+  if(m=ex.match(/^with_entries\((.+)\)$/))return jq(jq(d,'to_entries'),`map(${m[1]})|from_entries`);
+  if(m=ex.match(/^has\("(\w+)"\)$/))return m[1] in(d||{});
+  if(m=ex.match(/^has\((\d+)\)$/))return+m[1]<(Array.isArray(d)?d.length:0);
+  if(m=ex.match(/^group_by\(\.(\w+)\)$/)){mo(d);const g={};for(const i of d){const k=String(i?.[m[1]]);(g[k]=g[k]||[]).push(i)}return Object.values(g)}
+  if(m=ex.match(/^unique_by\(\.(\w+)\)$/)){mo(d);const s=new Set(),o=[];for(const i of d){const k=JSON.stringify(i?.[m[1]]);if(!s.has(k)){s.add(k);o.push(i)}}return o}
+  if(m=ex.match(/^sort_by\(\.(\w+)\)$/)){mo(d);const k=m[1];return[...d].sort((a,b)=>a?.[k]<b?.[k]?-1:a?.[k]>b?.[k]?1:0)}
+  if(m=ex.match(/^min_by\(\.(\w+)\)$/)){mo(d);const k=m[1];return d.reduce((x,v)=>x===null||v?.[k]<x?.[k]?v:x,null)}
+  if(m=ex.match(/^max_by\(\.(\w+)\)$/)){mo(d);const k=m[1];return d.reduce((x,v)=>x===null||v?.[k]>x?.[k]?v:x,null)}
+  if(m=ex.match(/^del\(\.(\w+)\)$/)){if(Array.isArray(d))return d.map(i=>{const o={...i};delete o[m[1]];return o});const o={...d};delete o[m[1]];return o}
+  if(m=ex.match(/^limit\((\d+);(.+)\)$/)){const r=jq(d,m[2]);return Array.isArray(r)?r.slice(0,+m[1]):r}
+  if(m=ex.match(/^(\.[\w\[\]:,?]+)\.([\w].*)$/))return jq(jq(d,m[1]),'.'+m[2]);
+  throw new Error('Unknown: '+ex);
+}
+
+function cond(d,c){
+  c=c.trim();
+  if(c.includes(' and ')){const[a,b]=c.split(' and ',2);return cond(d,a)&&cond(d,b)}
+  if(c.includes(' or ')){const[a,b]=c.split(' or ',2);return cond(d,a)||cond(d,b)}
+  if(c.startsWith('not '))return!cond(d,c.slice(4));
+  let m;
+  if(m=c.match(/^\.(\w+)\s*(==|!=|>=|<=|>|<)\s*(.+)$/)){
+    const v=d?.[m[1]];let r;try{r=JSON.parse(m[3])}catch{r=m[3].replace(/^"|"$/g,'')}
+    if(m[2]==='==')return v===r;if(m[2]==='!=')return v!==r;if(m[2]==='>')return v>r;if(m[2]==='<')return v<r;if(m[2]==='>='||m[2]==='≥')return v>=r;if(m[2]==='<='||m[2]==='≤')return v<=r;
+  }
+  if(m=c.match(/^has\("(\w+)"\)$/))return m[1] in(d||{});
+  if(m=c.match(/^\.(\w+)$/))return!!(d?.[m[1]]);
+  throw new Error('Unknown condition: '+c);
+}
+
+function pipes(ex){const ps=[];let dep=0,cur='';for(let i=0;i<ex.length;i++){if(ex[i]==='(')dep++;else if(ex[i]===')')dep--;else if(ex[i]==='|'&&dep===0){ps.push(cur.trim());cur='';continue}cur+=ex[i]}ps.push(cur.trim());return ps}
+function mo(v){if(!Array.isArray(v))throw new Error('Expected array, got '+typeof v)}
+function ma(v){if(!v||typeof v!=='object'||Array.isArray(v))throw new Error('Expected object, got '+typeof v)}
+
+render();
+</script>
+</body>
+</html>

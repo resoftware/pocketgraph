@@ -1,5 +1,26 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="com.companyname.Xamarin.Neo4j">
-	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="29" />
-	<application android:label="Xamarin.Neo4j.Android"></application>
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          android:versionCode="1"
+          android:versionName="1.0"
+          package="nl.resoftware.pocketgraph">
+    <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="36" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Required on Android 11+ to query for installed email apps -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.SENDTO" />
+            <data android:scheme="mailto" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="market" />
+        </intent>
+    </queries>
+
+    <application android:label="PocketGraph" android:icon="@mipmap/appicon" android:allowBackup="true"></application>
 </manifest>

@@ -51,18 +51,20 @@ namespace Xamarin.Neo4j.Services
                             config.WithTrustManager(_nativeTrustManager);
                     });
 
-                GraphClient = new BoltGraphClient(driver);
-
+                // Verify credentials with a real round-trip — this is the only reliable
+                // way to catch auth failures, since the driver connects lazily.
+                var verifySession = driver.AsyncSession();
                 try
                 {
-                    await GraphClient.ConnectAsync();
+                    var cursor = await verifySession.RunAsync("RETURN 1");
+                    await cursor.ConsumeAsync();
                 }
-                catch
+                finally
                 {
-                    // ConnectAsync runs Neo4j-specific metadata queries that non-Neo4j
-                    // servers (e.g. Memgraph) don't support. The underlying driver is
-                    // still connected and usable for running queries.
+                    await verifySession.CloseAsync();
                 }
+
+                GraphClient = new BoltGraphClient(driver);
             }
 
             catch (ServiceUnavailableException e)

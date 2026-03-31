@@ -5,16 +5,9 @@
           xmlns:fonts="clr-namespace:Xamarin.Neo4j.Fonts;assembly=Xamarin.Neo4j"
           x:Class="Xamarin.Neo4j.Controls.ConnectionCell">
     <Grid Padding="15, 10">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="1*" />
-        </Grid.ColumnDefinitions>
-
-        <Label Grid.Column="0" x:Name="isActiveIndicator" Text="{x:Static fonts:FontAwesomeSolid.Circle}" FontFamily="{StaticResource FontAwesomeSolid}" VerticalOptions="Center" TextColor="#34C759" Margin="0 ,0, 7.5, 0"/>
-
-        <StackLayout Grid.Column="1" Spacing="2">
+        <StackLayout Spacing="2">
             <Label Text="{Binding Name}" />
-            <Label Text="{Binding Host}" FontSize="Small" TextColor="{StaticResource SecondaryTextColor}" />
+            <Label Text="{Binding Host}" FontSize="Small" TextColor="{DynamicResource SecondaryTextColor}" />
         </StackLayout>
     </Grid>
 </ViewCell>

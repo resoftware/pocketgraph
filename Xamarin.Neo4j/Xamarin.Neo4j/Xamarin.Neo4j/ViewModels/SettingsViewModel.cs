@@ -75,13 +75,23 @@ namespace Xamarin.Neo4j.ViewModels
                     Body = body
                 };
 
+                if (!Email.Default.IsComposeSupported)
+                {
+                    await Application.Current.MainPage.DisplayAlert(
+                        "No Email App", "No email client is configured on this device.", "OK");
+                    return;
+                }
+
                 await Email.Default.ComposeAsync(message);
             }));
 
             Commands.Add("RateApp", new Command(async () =>
             {
-                await Launcher.Default.OpenAsync(
-                    new Uri("https://apps.apple.com/app/id1604368926?action=write-review"));
+                var url = DeviceInfo.Platform == DevicePlatform.Android
+                    ? "https://play.google.com/store/apps/details?id=nl.resoftware.pocketgraph"
+                    : "https://apps.apple.com/app/id1604368926?action=write-review";
+
+                await Launcher.Default.OpenAsync(new Uri(url));
             }));
 
             Commands.Add("ClearConnections", new Command(async () =>

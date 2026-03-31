@@ -4,18 +4,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                     x:Class="Xamarin.Neo4j.Themes.Fonts">
 
-    <OnPlatform x:TypeArguments="x:String" x:Key="FontAwesomeBrands">
-        <On Platform="Android" Value="FontAwesome5Brands.ttf#Regular" />
-        <On Platform="iOS" Value="FontAwesome5Brands-Regular" />
-    </OnPlatform>
+    <x:String x:Key="FontAwesomeBrands">FontAwesome5Brands-Regular</x:String>
+    <x:String x:Key="FontAwesomeSolid">FontAwesome5Free-Solid</x:String>
+    <x:String x:Key="FontAwesomeRegular">FontAwesome5Free-Regular</x:String>
 
-    <OnPlatform x:TypeArguments="x:String" x:Key="FontAwesomeSolid">
-        <On Platform="Android" Value="FontAwesome5Solid.ttf#Regular" />
-        <On Platform="iOS" Value="FontAwesome5Free-Solid" />
-    </OnPlatform>
-
-    <OnPlatform x:TypeArguments="x:String" x:Key="FontAwesomeRegular">
-        <On Platform="Android" Value="FontAwesome5Regular.ttf#Regular" />
-        <On Platform="iOS" Value="FontAwesome5Free-Regular" />
-    </OnPlatform>
 </ResourceDictionary>

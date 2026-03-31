@@ -4,47 +4,20 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:fonts="clr-namespace:Xamarin.Neo4j.Fonts;assembly=Xamarin.Neo4j"
              xmlns:controls="clr-namespace:Xamarin.Neo4j.Controls;assembly=Xamarin.Neo4j"
-             xmlns:converters="clr-namespace:Xamarin.Neo4j.Converters;assembly=Xamarin.Neo4j"
-             x:Class="Xamarin.Neo4j.Pages.ConnectionsPage"
+x:Class="Xamarin.Neo4j.Pages.ConnectionsPage"
              x:Name="connectionsPage"
-             Title="Connections">
-    <ContentPage.Resources>
-        <ResourceDictionary>
-            <converters:IsActiveConnectionConverter x:Key="isActiveConnection" />
-        </ResourceDictionary>
-    </ContentPage.Resources>
-
-    <ContentPage.IconImageSource>
-        <FontImageSource
-            FontFamily="{StaticResource FontAwesomeSolid}"
-            Glyph="{x:Static fonts:FontAwesomeSolid.Server}"
-            Size="20" />
-    </ContentPage.IconImageSource>
+             Title="PocketGraph">
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Command="{Binding Commands[StartSession]}">
-            <ToolbarItem.IconImageSource>
-                <FontImageSource
-                    FontFamily="{StaticResource FontAwesomeSolid}"
-                    Glyph="{x:Static fonts:FontAwesomeSolid.Terminal}" Size="20" />
-            </ToolbarItem.IconImageSource>
-        </ToolbarItem>
-
-        <ToolbarItem Command="{Binding Commands[AddConnection]}">
-            <ToolbarItem.IconImageSource>
-                <FontImageSource
-                    FontFamily="{StaticResource FontAwesomeSolid}"
-                    Glyph="{x:Static fonts:FontAwesomeSolid.PlusCircle}" Size="20" />
-            </ToolbarItem.IconImageSource>
-        </ToolbarItem>
+        <ToolbarItem Text="Settings" Order="Secondary" Command="{Binding Commands[OpenSettings]}" />
     </ContentPage.ToolbarItems>
 
     <ContentPage.Content>
         <Grid>
-            <ListView ItemsSource="{Binding ConnectionStrings}" HasUnevenRows="True" SelectionMode="None" ItemTapped="SetActive" IsVisible="{Binding HasItems}">
+            <ListView ItemsSource="{Binding ConnectionStrings}" HasUnevenRows="True" SelectionMode="None" ItemTapped="OpenSession" IsVisible="{Binding HasItems}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <controls:ConnectionCell IsActive="{Binding ., Converter={StaticResource isActiveConnection}}">
+                        <controls:ConnectionCell>
                             <controls:ConnectionCell.ContextActions>
                                 <MenuItem Text="Edit" Command="{Binding BindingContext.Commands[EditConnectionString], Source={x:Reference connectionsPage}}" CommandParameter="{Binding .}" />
                                 <MenuItem Text="Delete" Command="{Binding BindingContext.Commands[DeleteConnectionString], Source={x:Reference connectionsPage}}" CommandParameter="{Binding .}" IsDestructive="true" />
@@ -58,18 +31,30 @@
                 <Label Text="{x:Static fonts:FontAwesomeSolid.Server}"
                        FontFamily="{StaticResource FontAwesomeSolid}"
                        FontSize="48"
-                       TextColor="{StaticResource SecondaryTextColor}"
+                       TextColor="{DynamicResource SecondaryTextColor}"
                        HorizontalOptions="Center" />
                 <Label Text="No connections"
                        FontSize="18"
                        FontAttributes="Bold"
-                       TextColor="{StaticResource SecondaryTextColor}"
+                       TextColor="{DynamicResource SecondaryTextColor}"
                        HorizontalOptions="Center" />
                 <Label Text="Tap + to add a connection"
                        FontSize="14"
-                       TextColor="{StaticResource SecondaryTextColor}"
+                       TextColor="{DynamicResource SecondaryTextColor}"
                        HorizontalOptions="Center" />
             </StackLayout>
+
+            <!-- FAB -->
+            <Button Text="{x:Static fonts:FontAwesomeSolid.Plus}"
+                    FontFamily="{StaticResource FontAwesomeSolid}"
+                    FontSize="20"
+                    WidthRequest="56" HeightRequest="56"
+                    CornerRadius="28"
+                    BackgroundColor="{DynamicResource Accent}"
+                    TextColor="White"
+                    VerticalOptions="End" HorizontalOptions="End"
+                    Margin="0,0,16,16"
+                    Command="{Binding Commands[AddConnection]}" />
         </Grid>
     </ContentPage.Content>
 </ContentPage>

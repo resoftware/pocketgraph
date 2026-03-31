@@ -1,38 +1,74 @@
-﻿using System;
-using Acr.UserDialogs;
 using Android.App;
 using Android.Content.PM;
-using Android.Runtime;
+using Android.Content.Res;
 using Android.Views;
-using Android.Widget;
-using Android.OS;
+using AndroidX.AppCompat.Widget;
+using AndroidX.Core.View;
+using Microsoft.Maui;
+using Microsoft.Maui.ApplicationModel;
+using AColor = Android.Graphics.Color;
 
 namespace Xamarin.Neo4j.Android
 {
-    [Activity(Label = "Xamarin.Neo4j", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
-    public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
+    [Activity(
+        Theme = "@style/Maui.SplashTheme",
+        MainLauncher = true,
+        ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation |
+                               ConfigChanges.UiMode | ConfigChanges.ScreenLayout |
+                               ConfigChanges.SmallestScreenSize | ConfigChanges.Density
+    )]
+    public class MainActivity : MauiAppCompatActivity
     {
-        protected override void OnCreate(Bundle savedInstanceState)
+        protected override void OnResume()
         {
-            TabLayoutResource = Resource.Layout.Tabbar;
-            ToolbarResource = Resource.Layout.Toolbar;
+            base.OnResume();
 
-            UserDialogs.Init(this);
+            // Re-apply theme and nav bar colours when returning to the foreground.
+            // ConfigChanges.UiMode prevents Activity recreation on system theme change,
+            // so RequestedThemeChanged may not fire reliably — we re-derive the theme
+            // from the current configuration instead.
+            if (IPlatformApplication.Current?.Application is App app)
+            {
+                var nightMode = Resources.Configuration.UiMode & UiMode.NightMask;
+                var isDark = nightMode == UiMode.NightYes;
 
-            base.OnCreate(savedInstanceState);
+                // Status bar: match page background, icons contrast with it
+                if (Window != null)
+                {
+                    var statusBarColor = isDark
+                        ? AColor.ParseColor("#0c0c0c")
+                        : AColor.ParseColor("#f5f5f5");
+                    Window.SetStatusBarColor(statusBarColor);
 
-            Essentials.Platform.Init(this, savedInstanceState);
+                    var controller = new WindowInsetsControllerCompat(Window, Window.DecorView);
+                    controller.AppearanceLightStatusBars = !isDark;
+                }
 
-            Forms.Forms.Init(this, savedInstanceState);
-
-            LoadApplication(new App());
+                MainThread.BeginInvokeOnMainThread(() =>
+                    app.UpdateTheme(isDark ? AppTheme.Dark : AppTheme.Light));
+            }
         }
 
-        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
+        public override void OnWindowFocusChanged(bool hasFocus)
         {
-            Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+            base.OnWindowFocusChanged(hasFocus);
+            if (hasFocus)
+                TintToolbarOverflow(Window?.DecorView as ViewGroup);
+        }
 
-            base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        // MAUI creates its toolbar programmatically so theme-based tinting doesn't reach
+        // the overflow icon. Walk the view tree and apply the tint directly.
+        private static void TintToolbarOverflow(ViewGroup? parent)
+        {
+            if (parent == null) return;
+            for (var i = 0; i < parent.ChildCount; i++)
+            {
+                var child = parent.GetChildAt(i);
+                if (child is Toolbar toolbar)
+                    toolbar.OverflowIcon?.SetTint(AColor.White);
+                else if (child is ViewGroup vg)
+                    TintToolbarOverflow(vg);
+            }
         }
     }
 }

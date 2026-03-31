@@ -17,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Xamarin.Neo4j.Annotations;
+using Xamarin.Neo4j.Managers;
 using Xamarin.Neo4j.Models;
 using Xamarin.Neo4j.Pages;
 using Xamarin.Neo4j.Services;
@@ -41,6 +42,8 @@ namespace Xamarin.Neo4j.ViewModels
 
         private ObservableCollection<QueryResult> _queryResults;
 
+        private List<Query> _savedQueries;
+
         private Neo4jConnectionString _connectionString;
 
         private string _query;
@@ -54,7 +57,11 @@ namespace Xamarin.Neo4j.ViewModels
 
             Query = initialQuery;
             QueryResults = new ObservableCollection<QueryResult>();
-            QueryResults.CollectionChanged += (_, _) => OnPropertyChanged(nameof(IsEmpty));
+            QueryResults.CollectionChanged += (_, _) =>
+            {
+                OnPropertyChanged(nameof(IsEmpty));
+                OnPropertyChanged(nameof(HasResults));
+            };
 
             Commands.Add("ExecuteQuery", new Command(async () =>
             {
@@ -65,18 +72,89 @@ namespace Xamarin.Neo4j.ViewModels
 
                 var result = await _neo4jService.ExecuteQuery(Query, _connectionString);
 
-                if (result.Success)
-                {
-                    QueryResults.Insert(0, result);
-
-                    ScrollToTop?.Invoke(this, EventArgs.Empty);
-                }
-
-                else
-                    await Application.Current.MainPage.DisplayAlert("", result.ErrorMessage, "OK");
+                Query = null;
+                QueryResults.Insert(0, result);
+                ScrollToTop?.Invoke(this, EventArgs.Empty);
             }));
 
+            Commands.Add("DeleteQuery", new Command(async (o) =>
+            {
+                if (!(o is Query query))
+                    return;
+
+                var confirmed = await Application.Current.MainPage.DisplayAlert(
+                    "Delete Query",
+                    $"Delete \"{query.Name}\"?",
+                    "Delete", "Cancel");
+
+                if (confirmed)
+                {
+                    SavedQueryManager.DeleteSavedQuery(query);
+                    LoadSavedQueries();
+                }
+            }));
+
+            Commands.Add("LoadQuery", new Command((o) =>
+            {
+                if (o is Query query)
+                    LoadQuery(query);
+            }));
+
+            Commands.Add("LoadResultQuery", new Command((o) =>
+            {
+                if (o is QueryResult result)
+                    Query = result.Query;
+            }));
+
+            Commands.Add("DeleteResult", new Command((o) =>
+            {
+                if (o is QueryResult result)
+                    DeleteQueryResult(result);
+            }));
+
+            Commands.Add("SaveQuery", new Command(async (o) =>
+            {
+                if (!(o is QueryResult result)) return;
+                var name = await Application.Current.MainPage.DisplayPromptAsync(
+                    "Save Query", "What would you like to call this query?");
+                if (!string.IsNullOrWhiteSpace(name))
+                {
+                    SavedQueryManager.AddSavedQuery(new Query
+                    {
+                        Id = Guid.NewGuid(),
+                        QueryText = result.Query,
+                        Name = name
+                    });
+                    LoadSavedQueries();
+                }
+            }));
+
+            Commands.Add("OpenGraph", new Command(async (o) =>
+            {
+                if (!(o is QueryResult result) || !result.CanDisplayGraph || result.NeovisHtml == null) return;
+                var connectionString2 = ConnectionStringManager.ActiveConnectionString;
+                await Navigation.PushAsync(new GraphPage(result.NeovisHtml, connectionString2, _neo4jService));
+            }));
+
+            Commands.Add("OpenTable", new Command(async (o) =>
+            {
+                if (!(o is QueryResult result) || !result.Success) return;
+                await Navigation.PushAsync(new TablePage(result));
+            }));
+
+            Commands.Add("ClearResults", new Command(() => ClearAllResults()));
+
             InitializeConnection(connectionString);
+        }
+
+        public void LoadSavedQueries()
+        {
+            SavedQueries = SavedQueryManager.GetSavedQueries();
+        }
+
+        public void LoadQuery(Query query)
+        {
+            Query = query.QueryText;
         }
 
         private async void InitializeConnection(Neo4jConnectionString connectionString)
@@ -104,6 +182,11 @@ namespace Xamarin.Neo4j.ViewModels
             var item = QueryResults.FirstOrDefault(qr => qr.Id == queryResult.Id);
             if (item != null)
                 QueryResults.Remove(item);
+        }
+
+        public void ClearAllResults()
+        {
+            QueryResults.Clear();
         }
 
         [NotifyPropertyChangedInvocator]
@@ -164,9 +247,38 @@ namespace Xamarin.Neo4j.ViewModels
             }
         }
 
+        public List<Query> SavedQueries
+        {
+            get => _savedQueries;
+
+            set
+            {
+                _savedQueries = value;
+
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasSavedQueries));
+                OnPropertyChanged(nameof(HasNoSavedQueries));
+            }
+        }
+
         public bool CanExecuteQuery => !string.IsNullOrWhiteSpace(Query) && CurrentDatabase != null;
 
         public bool IsEmpty => QueryResults?.Count == 0;
+
+        public bool HasResults => !IsEmpty;
+
+        public bool HasSavedQueries => _savedQueries?.Count > 0;
+
+        public bool HasNoSavedQueries => !HasSavedQueries;
+
+        public double GraphViewHeight
+        {
+            get
+            {
+                var screenHeight = _screenSizeService.GetScreenHeight();
+                return Math.Max(200, screenHeight - 300);
+            }
+        }
 
         #endregion
     }

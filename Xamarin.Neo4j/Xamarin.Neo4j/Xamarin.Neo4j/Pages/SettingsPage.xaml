@@ -14,33 +14,156 @@
 
     <ContentPage.Content>
         <Grid RowDefinitions="*,Auto">
-            <TableView Grid.Row="0" Intent="Settings" Background="Transparent" HasUnevenRows="True">
-                <TableRoot>
-                    <TableSection Title="Support">
-                        <TextCell Text="Contact Support" Command="{Binding Commands[ContactSupport]}" />
-                        <TextCell Text="Rate PocketGraph" Command="{Binding Commands[RateApp]}" />
-                    </TableSection>
 
-                    <TableSection Title="Data">
-                        <TextCell Text="Clear Saved Connections" Command="{Binding Commands[ClearConnections]}" />
-                        <TextCell Text="Clear Saved Queries" Command="{Binding Commands[ClearQueries]}" />
-                    </TableSection>
+            <ScrollView Grid.Row="0">
+                <StackLayout Padding="16" Spacing="24">
 
-                    <TableSection Title="About">
-                        <TextCell Text="{Binding VersionLabel}" />
-                        <TextCell Text="Software Licenses" Command="{Binding Commands[OpenLicensesPage]}" />
-                    </TableSection>
-                </TableRoot>
-            </TableView>
+                    <!-- Support -->
+                    <StackLayout Spacing="8">
+                        <Label Text="SUPPORT"
+                               FontSize="11" FontAttributes="Bold"
+                               CharacterSpacing="2"
+                               TextColor="{DynamicResource SecondaryTextColor}"
+                               Margin="4,0,0,0" />
+                        <Border BackgroundColor="{DynamicResource Extreme}"
+                                Stroke="{DynamicResource QueryTextBorder}"
+                                StrokeThickness="1"
+                                StrokeShape="RoundRectangle 4">
+                            <StackLayout Spacing="0">
+                                <Grid ColumnDefinitions="*,Auto" Padding="16,14">
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Commands[ContactSupport]}" />
+                                    </Grid.GestureRecognizers>
+                                    <Label Grid.Column="0" Text="Contact Support"
+                                           TextColor="{DynamicResource PrimaryTextColor}"
+                                           VerticalOptions="Center" />
+                                    <Label Grid.Column="1"
+                                           Text="{x:Static fonts:FontAwesomeSolid.ChevronRight}"
+                                           FontFamily="{StaticResource FontAwesomeSolid}"
+                                           FontSize="12"
+                                           TextColor="{DynamicResource SecondaryTextColor}"
+                                           VerticalOptions="Center" />
+                                </Grid>
+                                <BoxView HeightRequest="1" BackgroundColor="{DynamicResource QueryTextBorder}" Margin="16,0" />
+                                <Grid ColumnDefinitions="*,Auto" Padding="16,14">
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Commands[RateApp]}" />
+                                    </Grid.GestureRecognizers>
+                                    <Label Grid.Column="0" Text="Rate PocketGraph"
+                                           TextColor="{DynamicResource PrimaryTextColor}"
+                                           VerticalOptions="Center" />
+                                    <Label Grid.Column="1"
+                                           Text="{x:Static fonts:FontAwesomeSolid.ChevronRight}"
+                                           FontFamily="{StaticResource FontAwesomeSolid}"
+                                           FontSize="12"
+                                           TextColor="{DynamicResource SecondaryTextColor}"
+                                           VerticalOptions="Center" />
+                                </Grid>
+                            </StackLayout>
+                        </Border>
+                    </StackLayout>
 
-            <StackLayout Grid.Row="1" Spacing="15" Padding="25">
-                <Label Text="A product of" HorizontalOptions="Center" FontAttributes="Italic" FontSize="12" TextColor="{StaticResource SecondaryTextColor}" />
-                <Image Source="resoftware.png" HorizontalOptions="Center" WidthRequest="100">
-                    <Image.GestureRecognizers>
+                    <!-- Data -->
+                    <StackLayout Spacing="8">
+                        <Label Text="DATA"
+                               FontSize="11" FontAttributes="Bold"
+                               CharacterSpacing="2"
+                               TextColor="{DynamicResource SecondaryTextColor}"
+                               Margin="4,0,0,0" />
+                        <Border BackgroundColor="{DynamicResource Extreme}"
+                                Stroke="{DynamicResource QueryTextBorder}"
+                                StrokeThickness="1"
+                                StrokeShape="RoundRectangle 4">
+                            <StackLayout Spacing="0">
+                                <Grid ColumnDefinitions="*,Auto" Padding="16,14">
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Commands[ClearConnections]}" />
+                                    </Grid.GestureRecognizers>
+                                    <Label Grid.Column="0" Text="Clear Saved Connections"
+                                           TextColor="{DynamicResource PrimaryTextColor}"
+                                           VerticalOptions="Center" />
+                                    <Label Grid.Column="1"
+                                           Text="{x:Static fonts:FontAwesomeSolid.ChevronRight}"
+                                           FontFamily="{StaticResource FontAwesomeSolid}"
+                                           FontSize="12"
+                                           TextColor="{DynamicResource SecondaryTextColor}"
+                                           VerticalOptions="Center" />
+                                </Grid>
+                                <BoxView HeightRequest="1" BackgroundColor="{DynamicResource QueryTextBorder}" Margin="16,0" />
+                                <Grid ColumnDefinitions="*,Auto" Padding="16,14">
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Commands[ClearQueries]}" />
+                                    </Grid.GestureRecognizers>
+                                    <Label Grid.Column="0" Text="Clear Saved Queries"
+                                           TextColor="{DynamicResource PrimaryTextColor}"
+                                           VerticalOptions="Center" />
+                                    <Label Grid.Column="1"
+                                           Text="{x:Static fonts:FontAwesomeSolid.ChevronRight}"
+                                           FontFamily="{StaticResource FontAwesomeSolid}"
+                                           FontSize="12"
+                                           TextColor="{DynamicResource SecondaryTextColor}"
+                                           VerticalOptions="Center" />
+                                </Grid>
+                            </StackLayout>
+                        </Border>
+                    </StackLayout>
+
+                    <!-- About -->
+                    <StackLayout Spacing="8">
+                        <Label Text="ABOUT"
+                               FontSize="11" FontAttributes="Bold"
+                               CharacterSpacing="2"
+                               TextColor="{DynamicResource SecondaryTextColor}"
+                               Margin="4,0,0,0" />
+                        <Border BackgroundColor="{DynamicResource Extreme}"
+                                Stroke="{DynamicResource QueryTextBorder}"
+                                StrokeThickness="1"
+                                StrokeShape="RoundRectangle 4">
+                            <StackLayout Spacing="0">
+                                <Grid ColumnDefinitions="*,Auto" Padding="16,14">
+                                    <Label Grid.Column="0" Text="{Binding VersionLabel}"
+                                           TextColor="{DynamicResource PrimaryTextColor}"
+                                           VerticalOptions="Center" />
+                                    <Label Grid.Column="1"
+                                           TextColor="{DynamicResource SecondaryTextColor}"
+                                           VerticalOptions="Center" />
+                                </Grid>
+                                <BoxView HeightRequest="1" BackgroundColor="{DynamicResource QueryTextBorder}" Margin="16,0" />
+                                <Grid ColumnDefinitions="*,Auto" Padding="16,14">
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Commands[OpenLicensesPage]}" />
+                                    </Grid.GestureRecognizers>
+                                    <Label Grid.Column="0" Text="Software Licenses"
+                                           TextColor="{DynamicResource PrimaryTextColor}"
+                                           VerticalOptions="Center" />
+                                    <Label Grid.Column="1"
+                                           Text="{x:Static fonts:FontAwesomeSolid.ChevronRight}"
+                                           FontFamily="{StaticResource FontAwesomeSolid}"
+                                           FontSize="12"
+                                           TextColor="{DynamicResource SecondaryTextColor}"
+                                           VerticalOptions="Center" />
+                                </Grid>
+                            </StackLayout>
+                        </Border>
+                    </StackLayout>
+
+                </StackLayout>
+            </ScrollView>
+
+            <StackLayout Grid.Row="1" Spacing="4" Padding="25,16">
+                <Label HorizontalOptions="Center" FontSize="12">
+                    <Label.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding Commands[OpenReSoftwareSite]}" />
-                    </Image.GestureRecognizers>
-                </Image>
+                    </Label.GestureRecognizers>
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="A product of " TextColor="{DynamicResource SecondaryTextColor}" FontAttributes="Italic" />
+                            <Span Text="Re: Software" TextColor="{DynamicResource Accent}" FontAttributes="Bold" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
             </StackLayout>
+
         </Grid>
     </ContentPage.Content>
 </ContentPage>

@@ -1,73 +1,50 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
+
     <PropertyGroup>
-        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-        <ProjectGuid>{24C5C58E-C59D-4621-9BF0-2E3BAC547455}</ProjectGuid>
-        <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-        <OutputType>Library</OutputType>
-        <RootNamespace>Xamarin.Neo4j.Android</RootNamespace>
+        <TargetFramework>net10.0-android</TargetFramework>
+        <OutputType>Exe</OutputType>
+        <UseMaui>true</UseMaui>
         <AssemblyName>Xamarin.Neo4j.Android</AssemblyName>
-        <AndroidApplication>True</AndroidApplication>
-        <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
-        <AndroidResgenClass>Resource</AndroidResgenClass>
-        <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
-        <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
-        <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
-        <TargetFrameworkVersion>v10.0</TargetFrameworkVersion>
-        <AndroidHttpClientHandlerType>Xamarin.Android.Net.AndroidClientHandler</AndroidHttpClientHandlerType>
+        <ApplicationId>nl.resoftware.pocketgraph</ApplicationId>
+        <ApplicationTitle>PocketGraph</ApplicationTitle>
+        <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
+        <LangVersion>latest</LangVersion>
+        <Nullable>disable</Nullable>
+        <!-- Embed all assemblies in the APK so plain adb install works without Fast Deployment -->
+        <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
     </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-        <DebugSymbols>true</DebugSymbols>
-        <DebugType>portable</DebugType>
-        <Optimize>false</Optimize>
-        <OutputPath>bin\Debug</OutputPath>
-        <DefineConstants>DEBUG;</DefineConstants>
-        <ErrorReport>prompt</ErrorReport>
-        <WarningLevel>4</WarningLevel>
-        <AndroidLinkMode>None</AndroidLinkMode>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-        <DebugSymbols>true</DebugSymbols>
-        <DebugType>pdbonly</DebugType>
-        <Optimize>true</Optimize>
-        <OutputPath>bin\Release</OutputPath>
-        <ErrorReport>prompt</ErrorReport>
-        <WarningLevel>4</WarningLevel>
-        <AndroidManagedSymbols>true</AndroidManagedSymbols>
-        <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
-    </PropertyGroup>
+
     <ItemGroup>
-        <Reference Include="Mono.Android" />
-        <Reference Include="System" />
-        <Reference Include="System.Core" />
-        <Reference Include="System.Xml.Linq" />
-        <Reference Include="System.Xml" />
+        <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" />
     </ItemGroup>
+
     <ItemGroup>
-        <PackageReference Include="Xamarin.Forms" Version="5.0.0.2196" />
+        <!-- Link font assets from the iOS Resources folder so MAUI can bundle them for Android -->
+        <AndroidAsset Include="..\Xamarin.Neo4j.iOS\Resources\iconize-fontawesome-brands.ttf"
+                      Link="Assets\iconize-fontawesome-brands.ttf" />
+        <AndroidAsset Include="..\Xamarin.Neo4j.iOS\Resources\iconize-fontawesome-regular.ttf"
+                      Link="Assets\iconize-fontawesome-regular.ttf" />
+        <AndroidAsset Include="..\Xamarin.Neo4j.iOS\Resources\iconize-fontawesome-solid.ttf"
+                      Link="Assets\iconize-fontawesome-solid.ttf" />
+        <AndroidAsset Include="..\Xamarin.Neo4j.iOS\Resources\roboto-mono-regular.ttf"
+                      Link="Assets\roboto-mono-regular.ttf" />
+        <AndroidAsset Include="..\Xamarin.Neo4j.iOS\Resources\logo.png"
+                      Link="Assets\logo.png" />
+        <AndroidAsset Include="..\Xamarin.Neo4j.iOS\Resources\resoftware.png"
+                      Link="Assets\resoftware.png" />
     </ItemGroup>
+
     <ItemGroup>
-        <Compile Include="MainActivity.cs" />
-        <Compile Include="Resources\Resource.Designer.cs" />
-        <Compile Include="Properties\AssemblyInfo.cs" />
+        <!-- Exclude old Xamarin.Forms layout resources not needed by MAUI -->
+        <AndroidResource Remove="Resources\layout\Tabbar.axml" />
+        <AndroidResource Remove="Resources\layout\Toolbar.axml" />
+        <!-- Exclude old AssemblyInfo and Resource.designer — SDK-style generates these -->
+        <Compile Remove="Properties\AssemblyInfo.cs" />
+        <Compile Remove="Resources\Resource.Designer.cs" />
     </ItemGroup>
+
     <ItemGroup>
-        <None Include="Resources\AboutResources.txt" />
-        <None Include="Assets\AboutAssets.txt" />
-        <None Include="Properties\AndroidManifest.xml" />
+        <ProjectReference Include="..\Xamarin.Neo4j\Xamarin.Neo4j.csproj" />
     </ItemGroup>
-    <ItemGroup>
-        <AndroidResource Include="Resources\layout\Tabbar.axml" />
-        <AndroidResource Include="Resources\layout\Toolbar.axml" />
-        <AndroidResource Include="Resources\values\styles.xml" />
-        <AndroidResource Include="Resources\values\colors.xml" />
-    </ItemGroup>
-    <ItemGroup>
-        <ProjectReference Include="..\Xamarin.Neo4j\Xamarin.Neo4j.csproj">
-            <Project>{756232D0-DBB0-4AEB-B1CF-1F5CA12CAC85}</Project>
-            <Name>Xamarin.Neo4j</Name>
-        </ProjectReference>
-    </ItemGroup>
-    <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
+
 </Project>

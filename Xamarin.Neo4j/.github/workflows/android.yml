@@ -1,0 +1,105 @@
+name: Android
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      track:
+        description: 'Play Store track'
+        required: true
+        default: 'internal'
+        type: choice
+        options: [internal, alpha, beta, production]
+
+env:
+  ANDROID_PROJECT: Xamarin.Neo4j/Xamarin.Neo4j.Android/Xamarin.Neo4j.Android.csproj
+  OUTPUT_DIR: Xamarin.Neo4j/Xamarin.Neo4j.Android/bin/Release/net10.0-android
+
+jobs:
+  build:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: microsoft
+          java-version: '21'
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Install MAUI Android workload
+        run: dotnet workload install maui-android
+
+      - name: Restore
+        run: dotnet restore ${{ env.ANDROID_PROJECT }}
+
+      # ── Version ──────────────────────────────────────────────────────────────
+      - name: Resolve version
+        id: ver
+        run: |
+          DISPLAY="1.0.$GITHUB_RUN_NUMBER"
+          echo "display=$DISPLAY"        >> $GITHUB_OUTPUT
+          echo "code=$GITHUB_RUN_NUMBER" >> $GITHUB_OUTPUT
+          echo "tag=v$DISPLAY"           >> $GITHUB_OUTPUT
+
+      # ── Keystore ─────────────────────────────────────────────────────────────
+      - name: Decode keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > ${{ runner.temp }}/pocketgraph.jks
+
+      # ── Build APK (GitHub Releases) ───────────────────────────────────────────
+      - name: Build signed APK
+        run: |
+          dotnet publish ${{ env.ANDROID_PROJECT }} \
+            -c Release \
+            -p:AndroidPackageFormat=apk \
+            -p:AndroidKeyStore=true \
+            -p:AndroidSigningKeyStore=${{ runner.temp }}/pocketgraph.jks \
+            -p:AndroidSigningKeyAlias=${{ secrets.KEYSTORE_ALIAS }} \
+            -p:AndroidSigningKeyPass=${{ secrets.KEYSTORE_KEY_PASS }} \
+            -p:AndroidSigningStorePass=${{ secrets.KEYSTORE_STORE_PASS }} \
+            -p:ApplicationVersion=${{ steps.ver.outputs.code }} \
+            -p:ApplicationDisplayVersion=${{ steps.ver.outputs.display }}
+
+      # ── Build AAB (Play Store) ────────────────────────────────────────────────
+      - name: Build signed AAB
+        run: |
+          dotnet publish ${{ env.ANDROID_PROJECT }} \
+            -c Release \
+            -p:AndroidPackageFormat=aab \
+            -p:AndroidKeyStore=true \
+            -p:AndroidSigningKeyStore=${{ runner.temp }}/pocketgraph.jks \
+            -p:AndroidSigningKeyAlias=${{ secrets.KEYSTORE_ALIAS }} \
+            -p:AndroidSigningKeyPass=${{ secrets.KEYSTORE_KEY_PASS }} \
+            -p:AndroidSigningStorePass=${{ secrets.KEYSTORE_STORE_PASS }} \
+            -p:ApplicationVersion=${{ steps.ver.outputs.code }} \
+            -p:ApplicationDisplayVersion=${{ steps.ver.outputs.display }}
+
+      # ── GitHub Release ────────────────────────────────────────────────────────
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.ver.outputs.tag }}
+          name: PocketGraph ${{ steps.ver.outputs.display }}
+          generate_release_notes: true
+          files: ${{ env.OUTPUT_DIR }}/*-Signed.apk
+
+      # ── Play Store ────────────────────────────────────────────────────────────
+      - name: Upload to Play Store
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: nl.resoftware.pocketgraph
+          releaseFiles: ${{ env.OUTPUT_DIR }}/*.aab
+          track: ${{ github.event.inputs.track || 'internal' }}
+          status: completed
+          whatsNewDirectory: distribution/whatsnew

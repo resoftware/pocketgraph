@@ -7,13 +7,16 @@
         <ResourceDictionary Source="Fonts.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
-    <Color x:Key="PageBackground">#545863</Color>
-    <Color x:Key="SecondaryTextColor">#a6a7b2</Color>
-    <Color x:Key="Accent">#31333b</Color>
-    <Color x:Key="QueryTextBackground">Black</Color>
-    <Color x:Key="QueryTextBorder">#686868</Color>
-    <Color x:Key="QueryActionBar">#686868</Color>
-    <Color x:Key="Extreme">Black</Color>
+    <Color x:Key="PageBackground">#0c0c0c</Color>
+    <Color x:Key="ErrorBackground">#1a0000</Color>
+    <Color x:Key="ErrorTextColor">#ff6b6b</Color>
+    <Color x:Key="PrimaryTextColor">#e2e2e2</Color>
+    <Color x:Key="SecondaryTextColor">#868686</Color>
+    <Color x:Key="Accent">#e2e2e2</Color>
+    <Color x:Key="QueryTextBackground">#141414</Color>
+    <Color x:Key="QueryTextBorder">#2a2a2a</Color>
+    <Color x:Key="QueryActionBar">#141414</Color>
+    <Color x:Key="Extreme">#141414</Color>
 
     <Style TargetType="ContentPage" ApplyToDerivedTypes="True">
         <Setter Property="BackgroundColor" Value="{StaticResource PageBackground}" />
@@ -21,22 +24,22 @@
 
     <Style TargetType="ListView">
         <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="SeparatorColor" Value="LightGray" />
+        <Setter Property="SeparatorColor" Value="#2a2a2a" />
     </Style>
 
     <Style TargetType="NavigationPage">
-        <Setter Property="BarBackgroundColor" Value="{StaticResource Accent}"/>
-        <Setter Property="BarTextColor" Value="White" />
+        <Setter Property="BarBackgroundColor" Value="#141414"/>
+        <Setter Property="BarTextColor" Value="#e2e2e2" />
     </Style>
 
     <Style TargetType="TabbedPage" ApplyToDerivedTypes="True">
-        <Setter Property="BackgroundColor" Value="White"/>
-        <Setter Property="BarTextColor" Value="Black"/>
-        <Setter Property="SelectedTabColor" Value="White"/>
+        <Setter Property="BackgroundColor" Value="#141414"/>
+        <Setter Property="BarTextColor" Value="#868686"/>
+        <Setter Property="SelectedTabColor" Value="#e2e2e2"/>
     </Style>
 
     <Style TargetType="Editor" ApplyToDerivedTypes="True">
-        <Setter Property="BackgroundColor" Value="White"/>
-        <Setter Property="TextColor" Value="Black"/>
+        <Setter Property="BackgroundColor" Value="#141414"/>
+        <Setter Property="TextColor" Value="#e2e2e2"/>
     </Style>
 </ResourceDictionary>
