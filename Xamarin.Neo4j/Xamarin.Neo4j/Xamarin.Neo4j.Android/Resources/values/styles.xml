@@ -19,6 +19,9 @@
         <item name="colorAccent">@color/colorAccent</item>
         <!-- colorOnPrimary controls text/icon color on primary-colored surfaces (toolbar, overflow icon) -->
         <item name="colorOnPrimary">#ffffff</item>
+        <!-- windowBackground prevents white flash during page transitions -->
+        <item name="android:windowBackground">@color/windowBackground</item>
+        <item name="android:statusBarColor">@color/statusBarColor</item>
         <item name="actionModeBackground">@color/colorPrimary</item>
         <item name="actionOverflowButtonStyle">@style/OverflowMenuButton</item>
         <item name="actionModeStyle">@style/ActionModeStyle</item>

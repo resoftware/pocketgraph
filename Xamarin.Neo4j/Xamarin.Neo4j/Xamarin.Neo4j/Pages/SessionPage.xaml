@@ -49,6 +49,8 @@
                 <controls:QueryEditor Text="{Binding Query}" ExecuteClicked="ExecuteQuery"
                                      Placeholder="MATCH (n) RETURN n LIMIT 25"
                                      PlaceholderColor="{DynamicResource SecondaryTextColor}"
+                                     BackgroundColor="{DynamicResource QueryTextBackground}"
+                                     TextColor="{DynamicResource PrimaryTextColor}"
                                      FontSize="14" MaxHeight="200" HorizontalOptions="FillAndExpand" AutoSize="TextChanges" />
             </Border>
 
@@ -57,20 +59,21 @@
                 <StackLayout Spacing="0" Padding="0,0,0,16">
 
                     <!-- Saved queries section — collapsible, always above results -->
-                    <Grid ColumnDefinitions="*,Auto" Padding="16,10,4,4">
+                    <Grid ColumnDefinitions="*,Auto" Padding="16,10,16,4">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="ToggleSavedQueries" />
+                        </Grid.GestureRecognizers>
                         <Label Grid.Column="0"
                                Text="Saved Queries"
                                FontSize="12" FontAttributes="Bold"
                                TextColor="{DynamicResource SecondaryTextColor}"
                                VerticalOptions="Center" />
-                        <Button Grid.Column="1"
-                                x:Name="savedQueriesChevron"
-                                Text="{x:Static fonts:FontAwesomeSolid.ChevronUp}"
-                                FontFamily="{StaticResource FontAwesomeSolid}" FontSize="11"
-                                BackgroundColor="Transparent"
-                                TextColor="{DynamicResource SecondaryTextColor}"
-                                WidthRequest="40" HeightRequest="32"
-                                Clicked="ToggleSavedQueries" />
+                        <Label Grid.Column="1"
+                               x:Name="savedQueriesChevron"
+                               Text="{x:Static fonts:FontAwesomeSolid.ChevronUp}"
+                               FontFamily="{StaticResource FontAwesomeSolid}" FontSize="11"
+                               TextColor="{DynamicResource SecondaryTextColor}"
+                               VerticalOptions="Center" />
                     </Grid>
 
                     <StackLayout x:Name="savedQueriesContent" Spacing="0" Margin="16,0">

@@ -51,9 +51,9 @@
                    </Grid>
                </StackLayout>
 
-               <Button Text="Connect" BackgroundColor="{DynamicResource Accent}" TextColor="{DynamicResource QueryTextBackground}" Command="{Binding Commands[Connect]}" />
-               <Button Text="Test" BackgroundColor="Transparent" TextColor="{DynamicResource Accent}" BorderColor="{DynamicResource Accent}" BorderWidth="1" Command="{Binding Commands[Test]}" />
-               <Button Text="Save" BackgroundColor="Transparent" TextColor="{DynamicResource PrimaryTextColor}" BorderColor="{DynamicResource SecondaryTextColor}" BorderWidth="1" Command="{Binding Commands[Save]}" />
+               <Button Text="Test" BackgroundColor="Transparent" TextColor="{DynamicResource SecondaryTextColor}" BorderColor="{DynamicResource SecondaryTextColor}" BorderWidth="1" Command="{Binding Commands[Test]}" />
+               <Button Text="Connect" BackgroundColor="Transparent" TextColor="{DynamicResource PrimaryTextColor}" BorderColor="{DynamicResource PrimaryTextColor}" BorderWidth="1" Command="{Binding Commands[Connect]}" />
+               <Button Text="Save" BackgroundColor="{DynamicResource Accent}" TextColor="{DynamicResource QueryTextBackground}" Command="{Binding Commands[Save]}" />
            </StackLayout>
        </ScrollView>
     </ContentPage.Content>

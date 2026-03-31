@@ -32,9 +32,14 @@ namespace Xamarin.Neo4j.Android
                 var nightMode = Resources.Configuration.UiMode & UiMode.NightMask;
                 var isDark = nightMode == UiMode.NightYes;
 
-                // Status bar icon appearance: dark icons on light bg, white icons on dark bg
+                // Status bar: match page background, icons contrast with it
                 if (Window != null)
                 {
+                    var statusBarColor = isDark
+                        ? AColor.ParseColor("#0c0c0c")
+                        : AColor.ParseColor("#f5f5f5");
+                    Window.SetStatusBarColor(statusBarColor);
+
                     var controller = new WindowInsetsControllerCompat(Window, Window.DecorView);
                     controller.AppearanceLightStatusBars = !isDark;
                 }
