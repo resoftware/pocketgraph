@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using CoreGraphics;
 using Foundation;
+using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
@@ -22,6 +23,15 @@ namespace Xamarin.Neo4j.iOS.CustomRenderers
 {
     public class QueryEditorHandler : EditorHandler
     {
+        public QueryEditorHandler()
+        {
+            Mapper.AppendToMapping(nameof(Editor.Text), (handler, _) =>
+            {
+                if (handler is QueryEditorHandler qeh && handler.PlatformView is MauiTextView textView)
+                    HighlightWords(textView, qeh._keyWords);
+            });
+        }
+
         private readonly string[] _keyWords =
         [
             // Clauses
@@ -141,8 +151,6 @@ namespace Xamarin.Neo4j.iOS.CustomRenderers
                 AutoCapitalizeKeywords(platformView, _keyWords);
                 HighlightWords(platformView, _keyWords);
             };
-
-            HighlightWords(platformView, _keyWords);
         }
 
         private static void HighlightWords(UITextView platformView, IEnumerable<string> wordsToHighlight)
