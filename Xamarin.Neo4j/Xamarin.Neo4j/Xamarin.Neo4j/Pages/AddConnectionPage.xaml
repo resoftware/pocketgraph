@@ -56,7 +56,7 @@
                    </Grid>
                </StackLayout>
 
-               <Button Text="Test" BackgroundColor="Transparent" TextColor="{DynamicResource SecondaryTextColor}" BorderColor="{DynamicResource SecondaryTextColor}" BorderWidth="1" Command="{Binding Commands[Test]}" />
+               <Button Text="Test" BackgroundColor="Transparent" TextColor="{DynamicResource PrimaryTextColor}" BorderColor="{DynamicResource PrimaryTextColor}" BorderWidth="1" Command="{Binding Commands[Test]}" />
                <Button Text="Connect" BackgroundColor="Transparent" TextColor="{DynamicResource PrimaryTextColor}" BorderColor="{DynamicResource PrimaryTextColor}" BorderWidth="1" Command="{Binding Commands[Connect]}" />
                <Button Text="Save" BackgroundColor="{DynamicResource Accent}" TextColor="{DynamicResource QueryTextBackground}" Command="{Binding Commands[Save]}" />
            </StackLayout>

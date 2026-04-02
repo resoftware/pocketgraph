@@ -7,38 +7,31 @@
              x:Name="connectionsPage"
              Title=" ">
 
+    <NavigationPage.TitleView>
+        <StackLayout Orientation="Horizontal" Spacing="8" VerticalOptions="Center" HorizontalOptions="Start" Padding="4,0,0,0">
+            <Label Text="{x:Static fonts:FontAwesomeSolid.ProjectDiagram}"
+                   FontFamily="{StaticResource FontAwesomeSolid}"
+                   FontSize="18"
+                   TextColor="White"
+                   VerticalOptions="Center" />
+            <Label Text="PocketGraph"
+                   FontSize="18" FontAttributes="Bold"
+                   TextColor="White"
+                   VerticalOptions="Center" />
+        </StackLayout>
+    </NavigationPage.TitleView>
+
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Settings" Order="Secondary" Command="{Binding Commands[OpenSettings]}" />
     </ContentPage.ToolbarItems>
 
     <ContentPage.Content>
-        <Grid RowDefinitions="Auto,*">
-
-            <!-- Row 0: Dashboard header -->
-            <StackLayout Grid.Row="0" Spacing="4" Padding="16,16,16,12" HorizontalOptions="Center">
-                <Label Text="{x:Static fonts:FontAwesomeSolid.ProjectDiagram}"
-                       FontFamily="{StaticResource FontAwesomeSolid}"
-                       FontSize="32"
-                       TextColor="{DynamicResource PrimaryTextColor}"
-                       HorizontalOptions="Center"
-                       Margin="0,0,0,4" />
-                <Label Text="PocketGraph"
-                       FontSize="22" FontAttributes="Bold"
-                       TextColor="{DynamicResource PrimaryTextColor}"
-                       HorizontalOptions="Center" />
-                <Label Text="{Binding ConnectionCountLabel}"
-                       FontSize="13"
-                       TextColor="{DynamicResource SecondaryTextColor}"
-                       HorizontalOptions="Center" />
-            </StackLayout>
-
-            <!-- Row 1: Connection cards + empty state + FAB -->
-            <Grid Grid.Row="1">
+        <Grid>
 
                 <!-- Scrollable connection cards -->
                 <ScrollView IsVisible="{Binding HasItems}">
                     <StackLayout BindableLayout.ItemsSource="{Binding ConnectionStrings}"
-                                 Spacing="0" Padding="0,0,0,80">
+                                 Spacing="0" Padding="0,16,0,80">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate>
                                 <Border Margin="16,0,16,8"
@@ -155,8 +148,6 @@
                         VerticalOptions="End" HorizontalOptions="End"
                         Margin="0,0,16,16"
                         Command="{Binding Commands[AddConnection]}" />
-            </Grid>
-
         </Grid>
     </ContentPage.Content>
 </ContentPage>

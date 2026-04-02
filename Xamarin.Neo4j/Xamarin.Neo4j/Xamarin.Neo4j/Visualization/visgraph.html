@@ -150,6 +150,7 @@
             /* JSON view */
             .json-view-wrapper {
                 position: relative;
+                overflow: visible;
             }
             .json-view-wrapper pre {
                 background: {{borderColor}};
@@ -157,7 +158,7 @@
                 font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
                 font-size: 12px;
                 line-height: 1.5;
-                padding: 12px;
+                padding: 36px 12px 12px 12px;
                 border-radius: 8px;
                 overflow: auto;
                 max-height: 40vh;
@@ -169,6 +170,7 @@
                 position: absolute;
                 top: 8px;
                 right: 8px;
+                z-index: 10;
                 width: 28px;
                 height: 28px;
                 border: none;

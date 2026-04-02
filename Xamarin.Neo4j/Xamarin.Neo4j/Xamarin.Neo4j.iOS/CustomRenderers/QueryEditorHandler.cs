@@ -114,35 +114,11 @@ namespace Xamarin.Neo4j.iOS.CustomRenderers
                 scrollView.BottomAnchor.ConstraintEqualTo(pillContainer.BottomAnchor),
             });
 
-            // Execute button — blue pill
-            var executeBtn = new UIButton(UIButtonType.System);
-            executeBtn.TranslatesAutoresizingMaskIntoConstraints = false;
-            executeBtn.SetTitle("Execute", UIControlState.Normal);
-            executeBtn.SetTitleColor(UIColor.White, UIControlState.Normal);
-            executeBtn.BackgroundColor = UIColor.SystemBlue;
-            executeBtn.Layer.CornerRadius = pillHeight / 2f;
-            executeBtn.Layer.MasksToBounds = true;
-            executeBtn.TouchUpInside += (s, e) =>
-            {
-                if (VirtualView is QueryEditor queryEditor)
-                {
-                    queryEditor.RaiseExecuteClicked();
-                    platformView.ResignFirstResponder();
-                }
-            };
-
             accessoryView.AddSubview(pillContainer);
-            accessoryView.AddSubview(executeBtn);
 
             NSLayoutConstraint.ActivateConstraints(new[]
             {
-                executeBtn.TrailingAnchor.ConstraintEqualTo(accessoryView.TrailingAnchor, -padding),
-                executeBtn.CenterYAnchor.ConstraintEqualTo(accessoryView.CenterYAnchor),
-                executeBtn.HeightAnchor.ConstraintEqualTo(pillHeight),
-                executeBtn.WidthAnchor.ConstraintEqualTo(executeButtonWidth),
-
                 pillContainer.LeadingAnchor.ConstraintEqualTo(accessoryView.LeadingAnchor, padding),
-                pillContainer.TrailingAnchor.ConstraintEqualTo(executeBtn.LeadingAnchor, -padding),
                 pillContainer.CenterYAnchor.ConstraintEqualTo(accessoryView.CenterYAnchor),
                 pillContainer.HeightAnchor.ConstraintEqualTo(pillHeight),
             });
@@ -172,6 +148,9 @@ namespace Xamarin.Neo4j.iOS.CustomRenderers
         {
             var text = PreprocessText(platformView.Text ?? string.Empty);
             var attributedText = new NSMutableAttributedString(text);
+            attributedText.AddAttribute(UIStringAttributeKey.ForegroundColor,
+                UIColor.Label,
+                new NSRange(0, text.Length));
 
             foreach (var word in wordsToHighlight)
             {

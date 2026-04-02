@@ -178,7 +178,7 @@
                     </Border>
                 </StackLayout>
 
-                <!-- Footer — at end of scroll -->
+                <!-- Footer -->
                 <StackLayout Spacing="15" Padding="9,16,9,32">
                     <Label Text="A product of" HorizontalOptions="Center" FontAttributes="Italic" FontSize="12"
                            TextColor="{DynamicResource SecondaryTextColor}" />
