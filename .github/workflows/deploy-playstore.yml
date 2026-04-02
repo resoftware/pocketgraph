@@ -1,0 +1,89 @@
+name: Deploy to Play Store
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "Xamarin.Neo4j/**"
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: android-prod
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: microsoft
+          java-version: "21"
+
+      - name: Install MAUI Android workload
+        run: dotnet workload install maui-android
+
+      - name: Decode keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > ${{ runner.temp }}/pocketgraph.jks
+
+      - name: Get next version code from Play Store
+        id: version
+        env:
+          PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: |
+          pip install google-api-python-client google-auth --quiet
+          VERSION_CODE=$(python3 - <<'EOF'
+import json, os
+from googleapiclient.discovery import build
+from google.oauth2 import service_account
+
+creds = service_account.Credentials.from_service_account_info(
+    json.loads(os.environ['PLAY_SERVICE_ACCOUNT_JSON']),
+    scopes=['https://www.googleapis.com/auth/androidpublisher']
+)
+service = build('androidpublisher', 'v3', credentials=creds)
+edit = service.edits().insert(packageName='nl.resoftware.pocketgraph', body={}).execute()
+bundles = service.edits().bundles().list(
+    packageName='nl.resoftware.pocketgraph',
+    editId=edit['id']
+).execute()
+service.edits().delete(packageName='nl.resoftware.pocketgraph', editId=edit['id']).execute()
+max_code = max([b['versionCode'] for b in bundles.get('bundles', [])], default=0)
+print(max_code + 1)
+EOF
+          )
+          sed -i "s/android:versionCode=\"[^\"]*\"/android:versionCode=\"$VERSION_CODE\"/" \
+            Xamarin.Neo4j/Xamarin.Neo4j/Xamarin.Neo4j.Android/Properties/AndroidManifest.xml
+          echo "version_code=$VERSION_CODE" >> $GITHUB_OUTPUT
+          echo "Version code: $VERSION_CODE"
+
+      - name: Build signed AAB
+        working-directory: Xamarin.Neo4j/Xamarin.Neo4j/Xamarin.Neo4j.Android
+        run: |
+          dotnet publish -f net10.0-android -c Release \
+            -p:AndroidPackageFormat=aab \
+            -p:AndroidKeyStore=true \
+            -p:AndroidSigningKeyStore=${{ runner.temp }}/pocketgraph.jks \
+            -p:AndroidSigningKeyAlias=${{ secrets.KEYSTORE_ALIAS }} \
+            -p:AndroidSigningStorePass=${{ secrets.KEYSTORE_STORE_PASS }} \
+            -p:AndroidSigningKeyPass=${{ secrets.KEYSTORE_KEY_PASS }}
+
+      - name: Upload to Play Store
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: nl.resoftware.pocketgraph
+          releaseFiles: Xamarin.Neo4j/Xamarin.Neo4j/Xamarin.Neo4j.Android/bin/Release/net10.0-android/publish/*-Signed.aab
+          track: internal
+          status: completed
+          whatsNewDirectory: Xamarin.Neo4j/distribution/whatsnew

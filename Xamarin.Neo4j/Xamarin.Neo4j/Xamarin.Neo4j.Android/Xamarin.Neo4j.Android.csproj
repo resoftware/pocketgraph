@@ -12,6 +12,8 @@
         <Nullable>disable</Nullable>
         <!-- Embed all assemblies in the APK so plain adb install works without Fast Deployment -->
         <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+        <ApplicationDisplayVersion>2.0.0</ApplicationDisplayVersion>
+        <ApplicationVersion>2</ApplicationVersion>
     </PropertyGroup>
 
     <ItemGroup>
