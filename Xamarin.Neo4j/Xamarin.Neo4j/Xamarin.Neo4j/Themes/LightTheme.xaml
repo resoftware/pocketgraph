@@ -18,6 +18,8 @@
     <Color x:Key="QueryActionBar">#f5f5f5</Color>
     <Color x:Key="Extreme">#ffffff</Color>
     <Color x:Key="NavigationBarColor">#0c0c0c</Color>
+    <Color x:Key="FabBackgroundColor">#0c0c0c</Color>
+    <Color x:Key="FabTextColor">#ffffff</Color>
 
     <Style TargetType="ContentPage" ApplyToDerivedTypes="True">
         <Setter Property="BackgroundColor" Value="{StaticResource PageBackground}" />
