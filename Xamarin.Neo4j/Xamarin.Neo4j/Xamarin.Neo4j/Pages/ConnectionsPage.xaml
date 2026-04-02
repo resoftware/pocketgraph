@@ -142,8 +142,8 @@
                         FontSize="20"
                         WidthRequest="56" HeightRequest="56"
                         CornerRadius="28"
-                        BackgroundColor="{DynamicResource NavigationBarColor}"
-                        TextColor="White"
+                        BackgroundColor="{DynamicResource FabBackgroundColor}"
+                        TextColor="{DynamicResource FabTextColor}"
                         VerticalOptions="End" HorizontalOptions="End"
                         Margin="0,0,16,16"
                         Command="{Binding Commands[AddConnection]}" />
