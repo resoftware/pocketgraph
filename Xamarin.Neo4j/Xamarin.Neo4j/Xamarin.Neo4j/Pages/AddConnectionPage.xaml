@@ -9,7 +9,12 @@
        <ScrollView>
            <StackLayout Padding="24" Spacing="12">
                <StackLayout Spacing="4">
-                   <Label Text="Scheme:" FontAttributes="Bold" FontSize="Small"  />
+                   <Label Text="Name" FontAttributes="Bold" FontSize="Small" />
+                   <Entry Text="{Binding Name}" Placeholder="My Database" />
+               </StackLayout>
+
+               <StackLayout Spacing="4">
+                   <Label Text="Scheme" FontAttributes="Bold" FontSize="Small"  />
                    <Picker SelectedItem="{Binding Scheme}">
                        <Picker.ItemsSource>
                            <x:Array Type="{x:Type x:String}">
@@ -25,17 +30,17 @@
                </StackLayout>
                
                <StackLayout Spacing="4">
-                   <Label Text="Host:" FontAttributes="Bold" FontSize="Small"  />
+                   <Label Text="Host" FontAttributes="Bold" FontSize="Small"  />
                    <Entry Text="{Binding Host}" />
                </StackLayout>
 
                <StackLayout Spacing="4">
-                   <Label Text="Username:" FontAttributes="Bold" FontSize="Small"  />
+                   <Label Text="Username" FontAttributes="Bold" FontSize="Small"  />
                    <Entry Text="{Binding Username}" Keyboard="Default" />
                </StackLayout>
 
                <StackLayout Spacing="4">
-                   <Label Text="Password:" FontAttributes="Bold" FontSize="Small" />
+                   <Label Text="Password" FontAttributes="Bold" FontSize="Small" />
                    <Grid ColumnDefinitions="*,Auto">
                        <Entry Grid.Column="0" x:Name="passwordEntry"
                               Text="{Binding Password}"

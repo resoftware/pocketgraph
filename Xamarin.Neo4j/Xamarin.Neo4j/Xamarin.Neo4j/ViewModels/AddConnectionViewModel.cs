@@ -26,7 +26,7 @@ namespace Xamarin.Neo4j.ViewModels
     {
         private Guid? _id;
 
-        private string _scheme, _host, _username, _password;
+        private string _name, _scheme, _host, _username, _password;
 
         private readonly Neo4jService _neo4jService;
 
@@ -55,20 +55,13 @@ namespace Xamarin.Neo4j.ViewModels
             {
                 var connectionString = BuildConnectionString();
 
+                if (string.IsNullOrWhiteSpace(connectionString.Name))
+                    connectionString.Name = connectionString.Host;
+
                 if (_id.HasValue)
                     await ConnectionStringManager.UpdateConnectionString(_id.Value, connectionString);
-
                 else
-                {
-                    var name = await Application.Current.MainPage.DisplayPromptAsync("Save Connection", "How do you want to name this connection?", "Save", "Cancel");
-
-                    if (string.IsNullOrWhiteSpace(name))
-                        return;
-
-                    connectionString.Name = name;
-
                     await ConnectionStringManager.AddConnectionString(connectionString);
-                }
 
                 await Navigation.PopAsync();
             }));
@@ -91,6 +84,7 @@ namespace Xamarin.Neo4j.ViewModels
         {
             _id = neo4JConnectionString.Id;
 
+            Name = neo4JConnectionString.Name;
             Scheme = neo4JConnectionString.Scheme;
             Host = neo4JConnectionString.Host;
             Username = neo4JConnectionString.Username;
@@ -114,6 +108,7 @@ namespace Xamarin.Neo4j.ViewModels
             return new Neo4jConnectionString
             {
                 Id = Guid.NewGuid(),
+                Name = Name,
                 Scheme = Scheme,
                 Host = Host,
                 Username = Username,
@@ -122,6 +117,16 @@ namespace Xamarin.Neo4j.ViewModels
         }
 
         #region Bindable Properties
+
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                _name = value;
+                OnPropertyChanged(nameof(Name));
+            }
+        }
 
         public string Scheme
         {

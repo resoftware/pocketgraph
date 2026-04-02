@@ -141,6 +141,26 @@ namespace Xamarin.Neo4j.ViewModels
             }
         }
 
+        public bool AutoCapitalize
+        {
+            get => Preferences.Default.Get("auto_capitalize", true);
+            set
+            {
+                Preferences.Default.Set("auto_capitalize", value);
+                OnPropertyChanged(nameof(AutoCapitalize));
+            }
+        }
+
+        public bool AutoZoom
+        {
+            get => Preferences.Default.Get("auto_zoom", true);
+            set
+            {
+                Preferences.Default.Set("auto_zoom", value);
+                OnPropertyChanged(nameof(AutoZoom));
+            }
+        }
+
         #endregion
     }
 }

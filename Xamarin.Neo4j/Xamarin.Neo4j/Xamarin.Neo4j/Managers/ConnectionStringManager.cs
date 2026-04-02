@@ -69,6 +69,7 @@ namespace Xamarin.Neo4j.Managers
             if (connectionStringToUpdate == null)
                 return;
 
+            connectionStringToUpdate.Name = connectionString.Name;
             connectionStringToUpdate.Scheme = connectionString.Scheme;
             connectionStringToUpdate.Host = connectionString.Host;
             connectionStringToUpdate.Username = connectionString.Username;
