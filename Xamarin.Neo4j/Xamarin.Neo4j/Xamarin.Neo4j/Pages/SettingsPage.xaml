@@ -182,11 +182,16 @@
                 <StackLayout Spacing="15" Padding="9,16,9,32">
                     <Label Text="A product of" HorizontalOptions="Center" FontAttributes="Italic" FontSize="12"
                            TextColor="{DynamicResource SecondaryTextColor}" />
-                    <Image Source="resoftware.png" HorizontalOptions="Center" WidthRequest="100">
-                        <Image.GestureRecognizers>
+                    <Border HorizontalOptions="Center"
+                            BackgroundColor="#ffffff"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 12"
+                            Padding="16,8">
+                        <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding Commands[OpenReSoftwareSite]}" />
-                        </Image.GestureRecognizers>
-                    </Image>
+                        </Border.GestureRecognizers>
+                        <Image Source="resoftware.png" WidthRequest="90" />
+                    </Border>
                 </StackLayout>
 
             </StackLayout>
