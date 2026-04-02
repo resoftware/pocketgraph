@@ -3,6 +3,7 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import Meta from '../components/Meta.astro';
 const APP_STORE_URL = "https://apps.apple.com/nl/app/pocketgraph/id1604368926";
+const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=nl.resoftware.pocketgraph";
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -39,7 +40,7 @@ const APP_STORE_URL = "https://apps.apple.com/nl/app/pocketgraph/id1604368926";
       </h1>
 
       <p class="hero-sub">
-        PocketGraph connects to any Neo4j or Memgraph database via the lightning-fast Bolt protocol — SSL-encrypted, query-ready, and beautifully visual. Available on iOS and iPadOS.
+        PocketGraph connects to any Neo4j or Memgraph database via the lightning-fast Bolt protocol — SSL-encrypted, query-ready, and beautifully visual. Available on iOS, iPadOS, and Android.
       </p>
 
       <div class="hero-cta">
@@ -49,21 +50,22 @@ const APP_STORE_URL = "https://apps.apple.com/nl/app/pocketgraph/id1604368926";
           </svg>
           Download on the App Store
         </a>
-        <span class="btn-store btn-disabled" aria-disabled="true">
+        <a href={PLAY_STORE_URL} class="btn-store" target="_blank" rel="noopener">
           <svg width="20" height="20" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
             <path d="M17,14.5l4.2-4.5L4.9,1.2C4.8,1.1,4.6,1.1,4.3,1L17,14.5z"/>
             <path d="M23,21l5.9-3.2c0.7-0.4,1.1-1,1.1-1.8s-0.4-1.5-1.1-1.8L23,11l-4.7,5L23,21z"/>
             <path d="M2.4,1.9C2.1,2.2,2,2.6,2,3V29c0,0.4,0.1,0.8,0.4,1.2L15.6,16L2.4,1.9z"/>
             <path d="M17,17.5L4.3,31c0.2,0,0.4-0.1,0.6-0.2L21.2,22L17,17.5z"/>
           </svg>
-          Play Store &middot; Coming Soon
-        </span>
+          Get it on Google Play
+        </a>
         <span class="price-label">&euro;8.99 &middot; one-time</span>
       </div>
 
       <div class="platform-pills">
         <span>iOS 14.2+</span>
         <span>iPadOS 14.2+</span>
+        <span>Android 8.0+</span>
       </div>
     </div>
 
@@ -187,7 +189,7 @@ const APP_STORE_URL = "https://apps.apple.com/nl/app/pocketgraph/id1604368926";
 </div>
 
 <!-- ─── CTA ───────────────────────────────────────────────── -->
-<section class="cta">
+<section class="cta" id="download">
   <div class="cta-glow"></div>
   <div class="section-inner cta-inner">
     <img src="/logo.png" alt="PocketGraph" class="cta-icon" />
@@ -202,15 +204,15 @@ const APP_STORE_URL = "https://apps.apple.com/nl/app/pocketgraph/id1604368926";
         </svg>
         Download on App Store &middot; &euro;8.99
       </a>
-      <span class="btn-store large btn-disabled" aria-disabled="true">
+      <a href={PLAY_STORE_URL} class="btn-store large" target="_blank" rel="noopener">
         <svg width="22" height="22" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
           <path d="M17,14.5l4.2-4.5L4.9,1.2C4.8,1.1,4.6,1.1,4.3,1L17,14.5z"/>
           <path d="M23,21l5.9-3.2c0.7-0.4,1.1-1,1.1-1.8s-0.4-1.5-1.1-1.8L23,11l-4.7,5L23,21z"/>
           <path d="M2.4,1.9C2.1,2.2,2,2.6,2,3V29c0,0.4,0.1,0.8,0.4,1.2L15.6,16L2.4,1.9z"/>
           <path d="M17,17.5L4.3,31c0.2,0,0.4-0.1,0.6-0.2L21.2,22L17,17.5z"/>
         </svg>
-        Google Play &middot; Coming Soon
-      </span>
+        Get it on Google Play &middot; &euro;8.99
+      </a>
     </div>
   </div>
 </section>
@@ -456,14 +458,6 @@ const APP_STORE_URL = "https://apps.apple.com/nl/app/pocketgraph/id1604368926";
     transform: translateY(-2px);
     box-shadow: 0 8px 32px rgba(255, 255, 255, 0.2);
     background: #ffffff;
-  }
-  .btn-disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    pointer-events: none;
-    background: transparent;
-    color: var(--teal);
-    border: 1px solid rgba(226,226,226,0.3);
   }
   .btn-store.large {
     font-size: 1.05rem;

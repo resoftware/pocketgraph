@@ -5,7 +5,14 @@ on:
     branches: ["main"]
     paths:
       - "landing/**"
+  pull_request:
+    paths:
+      - "landing/**"
   workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
   deploy:
@@ -32,9 +39,19 @@ jobs:
         run: npm run build
 
       - name: Deploy to Cloudflare Pages
+        id: deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=pocketgraph-app
+          command: pages deploy dist --project-name=pocketgraph-app --branch=${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'main' }}
           workingDirectory: landing
+
+      - name: Comment preview URL on PR
+        if: github.event_name == 'pull_request'
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          message: |
+            🔍 **Preview deployment ready!**
+            ${{ steps.deploy.outputs.deployment-url }}
+          comment-tag: cloudflare-preview

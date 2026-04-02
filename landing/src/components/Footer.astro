@@ -1,5 +1,6 @@
 ---
 const APP_STORE_URL = "https://apps.apple.com/nl/app/pocketgraph/id1604368926";
+const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=nl.resoftware.pocketgraph";
 ---
 <footer>
   <div class="section-inner footer-inner">
@@ -9,6 +10,7 @@ const APP_STORE_URL = "https://apps.apple.com/nl/app/pocketgraph/id1604368926";
     </div>
     <div class="footer-links">
       <a href={APP_STORE_URL} target="_blank" rel="noopener">App Store</a>
+      <a href={PLAY_STORE_URL} target="_blank" rel="noopener">Google Play</a>
       <a href="https://github.com/resoftware/pocketgraph" target="_blank" rel="noopener">GitHub</a>
       <a href="https://resoftware.nl/contact" target="_blank" rel="noopener">Support</a>
       <a href="/privacy">Privacy Policy</a>
@@ -73,6 +75,7 @@ const APP_STORE_URL = "https://apps.apple.com/nl/app/pocketgraph/id1604368926";
 
   @media (max-width: 900px) {
     .footer-inner { flex-direction: column; align-items: flex-start; }
+    .footer-links { flex-direction: column; gap: 0.6rem; }
     .footer-copy { text-align: left; }
   }
 </style>
