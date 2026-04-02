@@ -180,17 +180,20 @@ namespace Xamarin.Neo4j.Android.CustomRenderers
             foreach (var key in new[] { "(", ")", "[", "]", "{", "}", ":", "-", "->", "<-", "\"", "'", ".", "=", "*", "$" })
             {
                 var captured = key;
-                var btn = new Button(context)
+                var btn = new TextView(context)
                 {
                     Text = captured,
+                    Gravity = GravityFlags.Center,
+                    Clickable = true,
+                    Focusable = true,
                     LayoutParameters = new LinearLayout.LayoutParams(
                         (int)(40 * density), ViewGroup.LayoutParams.MatchParent)
                 };
                 btn.SetTextColor(symbolTextColor);
                 btn.SetBackgroundColor(Color.Transparent);
                 btn.SetTextSize(global::Android.Util.ComplexUnitType.Sp, 15);
-                btn.SetAllCaps(false);
                 btn.SetPadding(0, 0, 0, 0);
+                btn.SetIncludeFontPadding(false);
                 btn.Click += (s, e) =>
                 {
                     var start = Math.Max(platformView.SelectionStart, 0);
