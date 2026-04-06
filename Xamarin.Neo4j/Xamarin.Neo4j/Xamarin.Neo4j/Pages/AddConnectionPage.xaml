@@ -3,6 +3,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:fonts="clr-namespace:Xamarin.Neo4j.Fonts;assembly=Xamarin.Neo4j"
+             xmlns:vm="clr-namespace:Xamarin.Neo4j.ViewModels;assembly=Xamarin.Neo4j"
+             x:DataType="vm:AddConnectionViewModel"
              Title="Add Connection"
              x:Class="Xamarin.Neo4j.Pages.AddConnectionPage">
     <ContentPage.Content>

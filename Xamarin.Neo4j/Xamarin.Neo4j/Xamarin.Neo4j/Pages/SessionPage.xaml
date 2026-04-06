@@ -4,6 +4,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:fonts="clr-namespace:Xamarin.Neo4j.Fonts;assembly=Xamarin.Neo4j"
              xmlns:controls="clr-namespace:Xamarin.Neo4j.Controls;assembly=Xamarin.Neo4j"
+             xmlns:vm="clr-namespace:Xamarin.Neo4j.ViewModels;assembly=Xamarin.Neo4j"
+             xmlns:models="clr-namespace:Xamarin.Neo4j.Models;assembly=Xamarin.Neo4j"
+             x:DataType="vm:SessionViewModel"
              x:Class="Xamarin.Neo4j.Pages.SessionPage"
              x:Name="sessionPage">
     <NavigationPage.TitleView>
@@ -21,7 +24,7 @@
                 </Label.FormattedText>
             </Label>
 
-            <Picker x:Name="databasePicker" ItemsSource="{Binding AvailableDatabases}" ItemDisplayBinding="{Binding DisplayName}" SelectedItem="{Binding CurrentDatabase}" IsVisible="False" />
+            <Picker x:Name="databasePicker" ItemsSource="{Binding AvailableDatabases}" SelectedItem="{Binding CurrentDatabase}" IsVisible="False" />
         </StackLayout>
     </NavigationPage.TitleView>
 
@@ -82,11 +85,11 @@
                                      IsVisible="{Binding HasSavedQueries}"
                                      Spacing="0">
                             <BindableLayout.ItemTemplate>
-                                <DataTemplate>
+                                <DataTemplate x:DataType="models:Query">
                                     <Grid ColumnDefinitions="*,Auto" Padding="0,10">
                                         <StackLayout Grid.Column="0" Spacing="2">
                                             <StackLayout.GestureRecognizers>
-                                                <TapGestureRecognizer
+                                                <TapGestureRecognizer x:DataType="{x:Null}"
                                                     Command="{Binding BindingContext.Commands[LoadQuery], Source={x:Reference sessionPage}}"
                                                     CommandParameter="{Binding .}" />
                                             </StackLayout.GestureRecognizers>
@@ -97,7 +100,7 @@
                                                    MaxLines="1"
                                                    LineBreakMode="TailTruncation" />
                                         </StackLayout>
-                                        <Button Grid.Column="1"
+                                        <Button Grid.Column="1" x:DataType="{x:Null}"
                                                 Text="{x:Static fonts:FontAwesomeSolid.TrashAlt}"
                                                 FontFamily="{StaticResource FontAwesomeSolid}"
                                                 FontSize="16"
@@ -144,7 +147,7 @@
 
                         <StackLayout BindableLayout.ItemsSource="{Binding QueryResults}" Spacing="0">
                             <BindableLayout.ItemTemplate>
-                                <DataTemplate>
+                                <DataTemplate x:DataType="models:QueryResult">
                                     <Border Margin="12,0,12,6"
                                             BackgroundColor="{DynamicResource Extreme}"
                                             Stroke="{DynamicResource QueryTextBorder}"
@@ -152,7 +155,7 @@
                                             StrokeShape="RoundRectangle 4">
                                         <StackLayout Spacing="0">
                                             <!-- Action row -->
-                                            <Grid ColumnDefinitions="*,*,*,*,Auto" Padding="4,0">
+                                            <Grid ColumnDefinitions="*,*,*,*,Auto" Padding="4,0" x:DataType="{x:Null}">
                                                 <Button Grid.Column="0"
                                                         Text="{x:Static fonts:FontAwesomeSolid.Star}"
                                                         FontFamily="{StaticResource FontAwesomeSolid}" FontSize="13"
@@ -204,14 +207,14 @@
                                                    LineBreakMode="TailTruncation"
                                                    MaxLines="1">
                                                 <Label.GestureRecognizers>
-                                                    <TapGestureRecognizer
+                                                    <TapGestureRecognizer x:DataType="{x:Null}"
                                                         Command="{Binding BindingContext.Commands[LoadResultQuery], Source={x:Reference sessionPage}}"
                                                         CommandParameter="{Binding .}" />
                                                 </Label.GestureRecognizers>
                                             </Label>
 
                                             <!-- Result content -->
-                                            <controls:QueryResultView
+                                            <controls:QueryResultView x:DataType="{x:Null}"
                                                 GraphViewHeight="{Binding BindingContext.GraphViewHeight, Source={x:Reference sessionPage}}" />
                                         </StackLayout>
                                     </Border>

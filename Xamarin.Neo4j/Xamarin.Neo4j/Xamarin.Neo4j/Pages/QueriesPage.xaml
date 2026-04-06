@@ -3,6 +3,9 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:fonts="clr-namespace:Xamarin.Neo4j.Fonts;assembly=Xamarin.Neo4j"
+             xmlns:vm="clr-namespace:Xamarin.Neo4j.ViewModels;assembly=Xamarin.Neo4j"
+             xmlns:models="clr-namespace:Xamarin.Neo4j.Models;assembly=Xamarin.Neo4j"
+             x:DataType="vm:QueriesViewModel"
              Title="Queries"
              x:Name="queriesPage"
              x:Class="Xamarin.Neo4j.Pages.QueriesPage">
@@ -17,10 +20,10 @@
         <Grid>
             <ListView ItemsSource="{Binding Queries}" ItemTapped="StartSessionWithQuery" IsVisible="{Binding HasItems}">
                 <ListView.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate x:DataType="models:Query">
                         <TextCell Text="{Binding Name}" Detail="{Binding QueryText}">
                             <TextCell.ContextActions>
-                                <MenuItem Text="Delete" Command="{Binding BindingContext.Commands[DeleteQuery], Source={x:Reference queriesPage} }" CommandParameter="{Binding .}" IsDestructive="true" />
+                                <MenuItem x:DataType="{x:Null}" Text="Delete" Command="{Binding BindingContext.Commands[DeleteQuery], Source={x:Reference queriesPage} }" CommandParameter="{Binding .}" IsDestructive="true" />
                             </TextCell.ContextActions>
                         </TextCell>
                     </DataTemplate>

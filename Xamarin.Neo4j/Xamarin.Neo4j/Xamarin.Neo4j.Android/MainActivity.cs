@@ -38,7 +38,9 @@ namespace Xamarin.Neo4j.Android
                     var statusBarColor = isDark
                         ? AColor.ParseColor("#0c0c0c")
                         : AColor.ParseColor("#f5f5f5");
+#pragma warning disable CA1422
                     Window.SetStatusBarColor(statusBarColor);
+#pragma warning restore CA1422
 
                     var controller = new WindowInsetsControllerCompat(Window, Window.DecorView);
                     controller.AppearanceLightStatusBars = !isDark;
@@ -58,7 +60,7 @@ namespace Xamarin.Neo4j.Android
 
         // MAUI creates its toolbar programmatically so theme-based tinting doesn't reach
         // the overflow icon. Walk the view tree and apply the tint directly.
-        private static void TintToolbarIcons(ViewGroup? parent)
+        private static void TintToolbarIcons(ViewGroup parent)
         {
             if (parent == null) return;
             for (var i = 0; i < parent.ChildCount; i++)

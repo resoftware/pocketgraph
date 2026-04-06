@@ -10,6 +10,7 @@ using Microsoft.Maui.Controls.Xaml;
 namespace Xamarin.Neo4j.Controls
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
+#pragma warning disable CS0618
     public partial class LicenseCell : ViewCell
     {
         public LicenseCell()

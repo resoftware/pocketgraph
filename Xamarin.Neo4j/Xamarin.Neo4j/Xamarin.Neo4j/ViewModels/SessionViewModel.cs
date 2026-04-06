@@ -82,7 +82,7 @@ namespace Xamarin.Neo4j.ViewModels
                 if (!(o is Query query))
                     return;
 
-                var confirmed = await Application.Current.MainPage.DisplayAlert(
+                var confirmed = await Application.Current.Windows[0].Page.DisplayAlertAsync(
                     "Delete Query",
                     $"Delete \"{query.Name}\"?",
                     "Delete", "Cancel");
@@ -115,7 +115,7 @@ namespace Xamarin.Neo4j.ViewModels
             Commands.Add("SaveQuery", new Command(async (o) =>
             {
                 if (!(o is QueryResult result)) return;
-                var name = await Application.Current.MainPage.DisplayPromptAsync(
+                var name = await Application.Current.Windows[0].Page.DisplayPromptAsync(
                     "Save Query", "What would you like to call this query?");
                 if (!string.IsNullOrWhiteSpace(name))
                 {
@@ -163,7 +163,7 @@ namespace Xamarin.Neo4j.ViewModels
 
             if (!isConnected)
             {
-                await Application.Current.MainPage.DisplayAlert("", message, "OK");
+                await Application.Current.Windows[0].Page.DisplayAlertAsync("", message, "OK");
 
                 return;
             }

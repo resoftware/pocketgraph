@@ -18,5 +18,7 @@ namespace Xamarin.Neo4j.Models
         public bool Default { get; set; }
 
         public string DisplayName => Name + (Default ? " 🏠" : string.Empty);
+
+        public override string ToString() => DisplayName;
     }
 }

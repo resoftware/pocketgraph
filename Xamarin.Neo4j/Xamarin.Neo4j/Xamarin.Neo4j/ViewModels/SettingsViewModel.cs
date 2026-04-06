@@ -77,7 +77,7 @@ namespace Xamarin.Neo4j.ViewModels
 
                 if (!Email.Default.IsComposeSupported)
                 {
-                    await Application.Current.MainPage.DisplayAlert(
+                    await Application.Current.Windows[0].Page.DisplayAlertAsync(
                         "No Email App", "No email client is configured on this device.", "OK");
                     return;
                 }
@@ -96,7 +96,7 @@ namespace Xamarin.Neo4j.ViewModels
 
             Commands.Add("ClearConnections", new Command(async () =>
             {
-                var clear = await Application.Current.MainPage.DisplayAlert(
+                var clear = await Application.Current.Windows[0].Page.DisplayAlertAsync(
                     "Clear Connections",
                     "Are you sure you want to remove all saved connections?",
                     "Clear", "Cancel");
@@ -109,7 +109,7 @@ namespace Xamarin.Neo4j.ViewModels
 
             Commands.Add("ClearQueries", new Command(async () =>
             {
-                var clear = await Application.Current.MainPage.DisplayAlert(
+                var clear = await Application.Current.Windows[0].Page.DisplayAlertAsync(
                     "Clear Saved Queries",
                     "Are you sure you want to remove all saved queries?",
                     "Clear", "Cancel");

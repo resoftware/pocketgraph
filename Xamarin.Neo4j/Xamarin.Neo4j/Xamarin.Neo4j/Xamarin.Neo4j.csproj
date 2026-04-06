@@ -5,6 +5,15 @@
         <UseMaui>true</UseMaui>
         <LangVersion>latest</LangVersion>
         <Nullable>disable</Nullable>
+        <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
+        <!-- XC0023: elements inside DataTemplates that bind to both the item model and the parent
+             page ViewModel via Source={x:Reference} cannot share a single compiled DataType.
+             x:DataType="{x:Null}" on those elements is intentional; suppress the hint. -->
+        <NoWarn>$(NoWarn);XC0023</NoWarn>
+        <!-- CS0618: ViewCell is deprecated but converting ListView to CollectionView is a larger
+             refactor. The MAUI XAML source generator emits this on the generated partial class
+             for ConnectionCell/LicenseCell which we cannot annotate directly. -->
+        <NoWarn>$(NoWarn);CS0618</NoWarn>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -15,6 +24,7 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" />
         <PackageReference Include="Neo4jClient" Version="4.1.18" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 
     <ItemGroup>

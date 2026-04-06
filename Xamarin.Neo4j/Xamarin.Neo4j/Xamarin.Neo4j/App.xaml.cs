@@ -21,7 +21,9 @@ namespace Xamarin.Neo4j
             SetTheme(Current.RequestedTheme);
             RequestedThemeChanged += (s, e) => SetTheme(e.RequestedTheme);
 
+#pragma warning disable CS0618
             MainPage = new NavigationPage(new ConnectionsPage());
+#pragma warning restore CS0618
 
             // SetTheme ran before MainPage was assigned, so apply bar colours now.
             ApplyNavBarColors();
@@ -47,7 +49,7 @@ namespace Xamarin.Neo4j
         // theme changes while the app is backgrounded are picked up on return.
         public void ApplyNavBarColors()
         {
-            if (MainPage is NavigationPage navPage)
+            if (Windows.Count > 0 && Windows[0].Page is NavigationPage navPage)
             {
                 if (Resources.TryGetValue("NavigationBarColor", out var navColor) && navColor is Color color)
                     navPage.BarBackgroundColor = color;

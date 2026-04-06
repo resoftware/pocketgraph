@@ -22,11 +22,11 @@ namespace Xamarin.Neo4j.Android.Services
         {
             var context = global::Android.App.Application.Context;
             var info = context.PackageManager.GetPackageInfo(context.PackageName, 0);
-#pragma warning disable CS0618
+#pragma warning disable CS0618, CA1416, CA1422
             return Build.VERSION.SdkInt >= BuildVersionCodes.P
                 ? info.LongVersionCode.ToString()
                 : info.VersionCode.ToString();
-#pragma warning restore CS0618
+#pragma warning restore CS0618, CA1416, CA1422
         }
     }
 }

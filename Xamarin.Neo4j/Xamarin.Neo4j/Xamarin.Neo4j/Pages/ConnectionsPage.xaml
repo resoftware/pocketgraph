@@ -3,6 +3,9 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:fonts="clr-namespace:Xamarin.Neo4j.Fonts;assembly=Xamarin.Neo4j"
+             xmlns:vm="clr-namespace:Xamarin.Neo4j.ViewModels;assembly=Xamarin.Neo4j"
+             xmlns:models="clr-namespace:Xamarin.Neo4j.Models;assembly=Xamarin.Neo4j"
+             x:DataType="vm:ConnectionsViewModel"
              x:Class="Xamarin.Neo4j.Pages.ConnectionsPage"
              x:Name="connectionsPage"
              Title=" ">
@@ -33,7 +36,7 @@
                     <StackLayout BindableLayout.ItemsSource="{Binding ConnectionStrings}"
                                  Spacing="0" Padding="0,16,0,80">
                         <BindableLayout.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="models:Neo4jConnectionString">
                                 <Border Margin="16,0,16,8"
                                         BackgroundColor="{DynamicResource Extreme}"
                                         Stroke="{DynamicResource QueryTextBorder}"
@@ -41,7 +44,7 @@
                                         StrokeShape="RoundRectangle 10">
                                     <Grid ColumnDefinitions="Auto,*,Auto" Padding="14,12">
                                         <Grid.GestureRecognizers>
-                                            <TapGestureRecognizer
+                                            <TapGestureRecognizer x:DataType="{x:Null}"
                                                 Command="{Binding BindingContext.Commands[OpenConnection], Source={x:Reference connectionsPage}}"
                                                 CommandParameter="{Binding .}" />
                                         </Grid.GestureRecognizers>
@@ -92,7 +95,7 @@
 
                                         <!-- Edit / Delete -->
                                         <StackLayout Grid.Column="2" Orientation="Horizontal" Spacing="0" VerticalOptions="Center">
-                                            <Button Text="{x:Static fonts:FontAwesomeSolid.PencilAlt}"
+                                            <Button x:DataType="{x:Null}" Text="{x:Static fonts:FontAwesomeSolid.PencilAlt}"
                                                     FontFamily="{StaticResource FontAwesomeSolid}"
                                                     FontSize="14"
                                                     WidthRequest="38" HeightRequest="38"
@@ -101,7 +104,7 @@
                                                     Padding="0"
                                                     Command="{Binding BindingContext.Commands[EditConnectionString], Source={x:Reference connectionsPage}}"
                                                     CommandParameter="{Binding .}" />
-                                            <Button Text="{x:Static fonts:FontAwesomeSolid.TrashAlt}"
+                                            <Button x:DataType="{x:Null}" Text="{x:Static fonts:FontAwesomeSolid.TrashAlt}"
                                                     FontFamily="{StaticResource FontAwesomeSolid}"
                                                     FontSize="14"
                                                     WidthRequest="38" HeightRequest="38"

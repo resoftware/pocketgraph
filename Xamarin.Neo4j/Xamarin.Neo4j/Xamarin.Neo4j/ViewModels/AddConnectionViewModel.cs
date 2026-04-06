@@ -48,7 +48,7 @@ namespace Xamarin.Neo4j.ViewModels
 
                 var (_, message) = await _neo4jService.EstablishConnection(connectionString);
 
-                await Application.Current.MainPage.DisplayAlert("", message, "OK");
+                await Application.Current.Windows[0].Page.DisplayAlertAsync("", message, "OK");
             }));
 
             Commands.Add("Save", new Command(async () =>
@@ -76,7 +76,7 @@ namespace Xamarin.Neo4j.ViewModels
                     await Navigation.PushAsync(new SessionPage(connectionString));
 
                 else
-                    await Application.Current.MainPage.DisplayAlert("", message, "OK");
+                    await Application.Current.Windows[0].Page.DisplayAlertAsync("", message, "OK");
             }));
         }
 

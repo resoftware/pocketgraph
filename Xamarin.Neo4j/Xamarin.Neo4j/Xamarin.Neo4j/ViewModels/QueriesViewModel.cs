@@ -42,7 +42,7 @@ namespace Xamarin.Neo4j.ViewModels
         {
             if (ConnectionStringManager.ActiveConnectionString == null)
             {
-                await Application.Current.MainPage.DisplayAlert("", "Please select a connection before starting a session.", "OK");
+                await Application.Current.Windows[0].Page.DisplayAlertAsync("", "Please select a connection before starting a session.", "OK");
 
                 return;
             }
