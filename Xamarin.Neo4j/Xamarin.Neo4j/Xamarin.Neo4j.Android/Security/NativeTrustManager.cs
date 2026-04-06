@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using Android.Runtime;
 using Java.Security;
 using Java.Security.Cert;
 using Javax.Net.Ssl;
@@ -25,8 +26,9 @@ namespace Xamarin.Neo4j
             var factory = TrustManagerFactory.GetInstance(TrustManagerFactory.DefaultAlgorithm);
             factory.Init((KeyStore)null);
             _androidTrustManager = factory.GetTrustManagers()
-                .OfType<IX509TrustManager>()
-                .First();
+                .OfType<Java.Lang.Object>()
+                .Select(m => m.JavaCast<IX509TrustManager>())
+                .First(m => m != null);
         }
 
         public override bool ValidateServerCertificate(Uri uri, X509Certificate2 certificate, X509Chain chain,
