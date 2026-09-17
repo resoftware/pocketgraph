@@ -50,6 +50,36 @@ dotnet test Xamarin.Neo4j/Xamarin.Neo4j/Xamarin.Neo4j.Tests/
 dotnet test Xamarin.Neo4j/Xamarin.Neo4j/Xamarin.Neo4j.IntegrationTests/
 ```
 
+### Android DEX shrinking & obfuscation (R8)
+
+Release builds of the Android head run R8 over the Java/DEX side
+(`AndroidLinkTool=r8` in `Xamarin.Neo4j.Android.csproj`). Play Console's *DEX code
+optimization* report scores obfuscation at ~1% on a stock .NET MAUI build: .NET for
+Android runs no DEX shrinker by default, and even with R8 on, the ProGuard config the
+SDK generates hardcodes `-dontobfuscate` — a flag nothing later in the config list can
+undo. The `_AndroidObfuscateDex` target therefore drops that file from R8's `--pg-conf`
+list and substitutes `Xamarin.Neo4j.Android/proguard_xamarin.cfg` (the same file minus
+that line), plus a generated file carrying the `-printmapping`/`-keepattributes` tail
+the SDK would have appended. Measured on the Release APK: **49.8% of DEX classes
+renamed, up from ~0%**.
+
+Only library-internal classes are renamed: the trimmer emits a `-keep` rule for every
+Java type the managed bindings reference, aapt2 one for every class named in a layout
+or the manifest, and each Android Callable Wrapper gets its own.
+`Xamarin.Neo4j.Android/proguard.cfg` covers what those miss — things resolved by name
+from native code. Add to it if a Release build dies with `ClassNotFoundException`,
+`NoSuchFieldError` or `NoSuchMethodError` where a Debug build does not.
+
+`mapping.txt` is embedded in the AAB
+(`BUNDLE-METADATA/com.android.tools.build.obfuscation/proguard.map`), so Play Console
+retraces obfuscated Java stacks by itself. Managed (C#) stack traces are unaffected —
+R8 only touches DEX.
+
+Local Release builds must be clean: aapt2's keep rules are registered as a `FileWrite`,
+so an incremental build that skips the resource link has `IncrementalClean` delete them.
+The target caches a copy outside `FileWrites` and errors out if even that is missing —
+delete `Xamarin.Neo4j.Android/obj/Release` if it fires.
+
 ## Technology Stack
 
 - .NET MAUI

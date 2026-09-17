@@ -53,4 +53,56 @@
         <ProjectReference Include="..\Xamarin.Neo4j\Xamarin.Neo4j.csproj" />
     </ItemGroup>
 
+    <!-- Android Release: shrink and obfuscate the Java/DEX half of the app with
+         R8. .NET for Android runs no DEX shrinker by default, so Play Console's
+         "DEX code optimization" report scores obfuscation at ~1%. The trimmer emits
+         a keep rule for every Java type the managed bindings reference
+         (obj/.../proguard/proguard_project_references.cfg), aapt2 one for every
+         class named in a layout, and each Android Callable Wrapper gets its own,
+         so only library-internal classes are renamed. -->
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <AndroidLinkTool>r8</AndroidLinkTool>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProguardConfiguration Include="proguard.cfg" />
+    </ItemGroup>
+
+    <!-- Swap the SDK's generated proguard_xamarin.cfg (which hardcodes
+         -dontobfuscate, a flag nothing later in the config list can undo) for our
+         copy without it, and regenerate the -printmapping/-keepattributes tail the
+         SDK appends to that same file so crash stacks stay retraceable. -->
+    <Target Name="_AndroidObfuscateDex" AfterTargets="_CalculateProguardConfigurationFiles" Condition="'$(AndroidLinkTool)' == 'r8'">
+        <PropertyGroup>
+            <_AndroidObfuscationProguardConfig>$(IntermediateOutputPath)proguard\proguard_obfuscate.cfg</_AndroidObfuscationProguardConfig>
+            <_AndroidAaptProguardRules>$(IntermediateOutputPath)proguard\aapt_rules.cached.txt</_AndroidAaptProguardRules>
+        </PropertyGroup>
+        <ItemGroup>
+            <_AndroidObfuscationProguardLines Include="-ignorewarnings" Condition="'$(AndroidR8IgnoreWarnings)' == 'True'" />
+            <_AndroidObfuscationProguardLines Include="-keepattributes SourceFile" />
+            <_AndroidObfuscationProguardLines Include="-keepattributes LineNumberTable" />
+            <!-- Absolute: R8 resolves a relative -printmapping against the directory
+                 of the config file that declares it, not the working directory. -->
+            <_AndroidObfuscationProguardLines Include="-printmapping &quot;$([System.IO.Path]::Combine('$(MSBuildProjectDirectory)', '$(AndroidProguardMappingFile)'))&quot;" Condition="'$(AndroidProguardMappingFile)' != ''" />
+        </ItemGroup>
+        <MakeDir Directories="$(IntermediateOutputPath)proguard" />
+        <WriteLinesToFile File="$(_AndroidObfuscationProguardConfig)" Lines="@(_AndroidObfuscationProguardLines)" Overwrite="true" WriteOnlyWhenDifferent="true" />
+        <!-- aapt2 derives keep rules for every class named in a layout or the
+             manifest, but the SDK adds them to @(ProguardConfiguration) inside
+             _CreateBaseApkWithAapt2 and registers the file as a FileWrite, so an
+             incremental Release build that skips the resource link both loses the
+             item and has IncrementalClean delete the file, shipping an APK that
+             dies inflating androidx.appcompat.widget.FitWindowsFrameLayout. Keep a
+             copy outside FileWrites and feed R8 that one instead. -->
+        <Copy SourceFiles="$(IntermediateOutputPath)aapt_rules.txt" DestinationFiles="$(_AndroidAaptProguardRules)" SkipUnchangedFiles="true" Condition="Exists('$(IntermediateOutputPath)aapt_rules.txt')" />
+        <Error Condition="!Exists('$(_AndroidAaptProguardRules)')" Text="R8 is enabled but no aapt2 keep rules are available: delete obj\$(Configuration) and publish again to force a full resource link." />
+        <ItemGroup>
+            <_ProguardConfiguration Remove="$(IntermediateOutputPath)proguard\proguard_xamarin.cfg" />
+            <_ProguardConfiguration Remove="$(IntermediateOutputPath)aapt_rules.txt" />
+            <_ProguardConfiguration Include="$(MSBuildProjectDirectory)\proguard_xamarin.cfg" />
+            <_ProguardConfiguration Include="$(_AndroidObfuscationProguardConfig)" />
+            <_ProguardConfiguration Include="$(_AndroidAaptProguardRules)" />
+        </ItemGroup>
+    </Target>
+
 </Project>
