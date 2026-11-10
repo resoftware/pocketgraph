@@ -1,0 +1,4 @@
+Contact: mailto:t.awater@resoftware.nl
+Expires: 2027-11-10T00:00:00.000Z
+Preferred-Languages: nl, en
+Canonical: https://pocketgraph.app/.well-known/security.txt
